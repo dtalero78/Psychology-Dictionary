@@ -1,0 +1,30 @@
+TASK: Identify and operationalize all variables in the study based on the hypothesis and research question.
+
+OUTPUT FORMAT:
+For each variable provide:
+- Variable name
+- Type (Independent Variable / Dependent Variable / Covariate / Control Variable)
+- Conceptual definition (1-2 sentences: what does this construct mean theoretically?)
+- Operational definition (exactly how will this be measured in this study)
+- Level of measurement (nominal / ordinal / interval / ratio)
+- Measurement tool (validated scale name or description of procedure)
+
+CATEGORIES TO ADDRESS:
+1. Independent Variable(s) (IV): The variable being manipulated or used to predict
+2. Dependent Variable(s) (DV): The outcome being measured
+3. Covariates: Variables controlled for statistically
+4. Demographic variables to collect (age, gender, education — always recommend collecting these)
+
+OPERATIONALIZATION GUIDELINES:
+- Be specific: "anxiety will be measured using the GAD-7 (7 items, Likert 0-3)" is good; "anxiety will be measured" is not
+- For IVs in experimental designs: describe the manipulation precisely
+- For IVs in correlational designs: describe the measurement instrument
+- Always recommend validated instruments where available
+- Specify how constructs will be scored (sum, mean, subscale structure)
+
+COMMON OPERATIONALIZATION PITFALLS TO AVOID:
+- Circular definitions (defining anxiety as "feeling anxious")
+- Unmeasurable constructs without specifying the instrument
+- Conflating conceptual and operational definitions
+
+End with a summary table of all variables.

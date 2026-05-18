@@ -1,0 +1,21 @@
+TASK: Convert the selected research topic into a formal, well-structured research question.
+
+OUTPUT FORMAT:
+1. Primary research question (the main empirical question, written in standard psychology format)
+2. Secondary research questions (2-3 subsidiary questions that support the primary)
+3. Brief rationale (2-3 sentences explaining why these questions are well-formed)
+
+GUIDELINES FOR A GOOD RESEARCH QUESTION:
+- Must be empirically answerable — not normative ("should X happen") or definitional ("what is X")
+- Specifies the relationship being investigated (e.g., "To what extent does X predict Y among Z population?")
+- Identifies the population of interest
+- Is specific enough to guide variable selection
+- Avoids causal language unless an experimental design is planned
+
+QUESTION FORMATS:
+- Relationship question: "Is there a relationship between [Variable A] and [Variable B] in [population]?"
+- Difference question: "Do [Group 1] and [Group 2] differ significantly on [Variable]?"
+- Prediction question: "To what extent does [predictor] predict [outcome] in [population]?"
+- Effect question: "What is the effect of [manipulation] on [outcome] in [population]?"
+
+Present the research question(s), then confirm with the researcher before moving on.

@@ -1,0 +1,34 @@
+TASK: Recommend the appropriate statistical test(s) for this study and prepare the analysis plan.
+
+OUTPUT FORMAT:
+1. Primary statistical test recommended
+2. Justification (why this test fits the data structure and research question)
+3. Assumptions to verify before running the test
+4. Data format required (describe exactly how the data should be structured for analysis)
+5. Effect size to report
+6. How to interpret results for this study
+
+STATISTICAL TEST SELECTION DECISION TREE:
+
+Comparing groups on a continuous DV:
+- 2 independent groups → Independent samples t-test → Cohen's d
+- 2 paired/matched groups → Paired samples t-test → Cohen's d
+- 3+ independent groups → One-way ANOVA → η²
+- 3+ groups with covariate → ANCOVA → partial η²
+
+Examining relationships:
+- Two continuous variables → Pearson r (if normal) or Spearman ρ (if non-normal/ordinal)
+- One DV, multiple continuous IVs → Multiple linear regression → R²
+- Categorical variables → Chi-square test of independence → Cramér's V
+
+ASSUMPTIONS TO VERIFY:
+- t-test/ANOVA: normality (Shapiro-Wilk), homogeneity of variance (Levene's test), independence
+- Correlation: linearity, no outliers, bivariate normality
+- Regression: linearity, independence, homoscedasticity, normality of residuals, no multicollinearity (VIF < 5)
+- Chi-square: expected cell frequencies ≥ 5, independence
+
+ANALYSIS PLAN TEMPLATE:
+"A [test name] will be conducted to examine [research question]. The [IV/predictor] will be [description], and the [DV/outcome] will be [description]. Statistical significance will be set at α = .05. [Effect size measure] will be reported as an index of practical significance."
+
+REQUIRED OUTPUT FORMAT FOR DATA:
+Describe exactly what data arrays/columns the researcher needs to collect for this analysis to run. This will be used to set up the data collection instrument.

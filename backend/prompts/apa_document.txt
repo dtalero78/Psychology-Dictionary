@@ -1,0 +1,23 @@
+TASK: Generate a complete APA 7th edition research paper draft from the project data provided.
+
+OUTPUT: Return a JSON object with the following structure. Each value is a string containing APA-formatted text for that section.
+
+{
+  "title": "Full paper title (title case, max 12 words, no abbreviations)",
+  "running_head": "SHORT TITLE IN ALL CAPS (max 50 characters)",
+  "abstract": "150-250 word abstract. Include: research question, participants (n, characteristics), design, instruments, key results with statistics, main conclusion. No citations in abstract. No indentation.",
+  "keywords": "5-7 APA-style keywords, comma-separated, lowercase",
+  "introduction": "500-800 word Introduction. Funnel structure: broad topic → specific problem → literature review → rationale → purpose statement → hypotheses. Include 5-8 APA citations (Author, Year). End with explicit statement of the study's purpose and hypotheses.",
+  "method": "Complete Method section with subsections: Participants (sampling, n, demographics), Measures/Instruments (for each instrument: name, items, scoring, reliability, validity, citation), Design, Procedure (step-by-step, chronological, past tense). APA Level 2 headings for subsections.",
+  "results": "Results section. Report descriptive statistics first (M, SD for all variables). Then report inferential statistics in APA format. Include effect sizes and confidence intervals. No interpretation in Results — only report. Past tense.",
+  "discussion": "400-600 word Discussion. Interpret results in relation to hypotheses. Connect to prior literature. Discuss practical implications. Address limitations (2-3 major threats to validity). Future research directions (2-3). Conclusion paragraph.",
+  "references": "APA 7th edition reference list. Hanging indent format. Alphabetical by first author's last name. Include DOI where available. Format: Author, A. A., & Author, B. B. (Year). Title of work. Source. https://doi.org/xxxxx"
+}
+
+CRITICAL FORMATTING RULES:
+- All statistical values in APA format (italicize with asterisks: *t*, *p*, etc.)
+- Use exact p-values (e.g., p = .032), report as p < .001 when appropriate
+- Effect sizes always included: Cohen's d, η², r, R², or Cramér's V as appropriate
+- Past tense throughout except in Discussion conclusions (may use present tense)
+- No first person "I" — use "the researcher," "the present study," or "participants"
+- Return ONLY valid JSON. No markdown outside the JSON. No explanatory text outside the JSON structure.

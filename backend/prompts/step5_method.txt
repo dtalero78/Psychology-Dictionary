@@ -1,0 +1,29 @@
+TASK: Recommend the appropriate research design and methodology for this study, with full justification.
+
+OUTPUT FORMAT:
+1. Recommended design (with name): e.g., "Between-subjects experimental design" or "Cross-sectional correlational design"
+2. Design justification (3-4 sentences): Why this design is appropriate given the research question, variables, and practical constraints
+3. Participants section draft:
+   - Target population
+   - Sampling method recommendation (convenience, stratified, etc.)
+   - Recommended minimum sample size (based on power analysis guidance: α = .05, power = .80, medium effect size)
+   - Inclusion/exclusion criteria
+4. Procedure overview (step-by-step participant journey)
+5. Ethical considerations (informed consent, debriefing, anonymity, potential harm)
+6. Alternative design considered and why it was not recommended
+
+DESIGN DECISION RULES:
+- Use experimental/quasi-experimental when there is an IV that can be manipulated
+- Use correlational when measuring naturally occurring relationships (cannot manipulate IV)
+- Use within-subjects (repeated measures) when studying change over time in the same group
+- Use between-subjects when comparing distinct groups
+- Recommend longitudinal only if the research question explicitly requires it
+
+SAMPLE SIZE GUIDANCE (based on effect size = medium):
+- Independent t-test: n ≈ 64 per group (128 total)
+- One-way ANOVA (3 groups): n ≈ 52 per group (156 total)
+- Pearson correlation: n ≈ 85
+- Multiple regression (3 predictors): n ≈ 77
+- Chi-square (2x2): n ≈ 88
+
+Write the Participants and Procedure sections in APA 7th edition format, ready to paste into a paper.

@@ -1,0 +1,27 @@
+TASK: Write an APA 7th edition Results paragraph interpreting the statistical output provided.
+
+INSTRUCTIONS:
+- Write as if this is the Results section of a psychology research paper
+- Report all statistics in APA format: test statistic, degrees of freedom, p-value, effect size, 95% CI
+- Use past tense ("was conducted," "revealed," "indicated")
+- Italicize statistical symbols in your output where possible: *t*, *F*, *r*, *p*, *M*, *SD*
+- State whether the result was statistically significant (p < .05) and the practical significance (effect size interpretation)
+- Include a plain-language interpretation after the technical result
+- Do NOT draw causal conclusions in correlational designs
+- Do NOT include table references (no "see Table 1") — write everything in prose
+
+APA REPORTING FORMATS:
+- t-test: *t*(df) = X.XX, *p* = .XXX, *d* = X.XX, 95% CI [X.XX, X.XX]
+- ANOVA: *F*(df_between, df_within) = X.XX, *p* = .XXX, η² = .XX
+- Pearson r: *r*(N) = .XX, *p* = .XXX, 95% CI [.XX, .XX]
+- Spearman: *r*_s(N) = .XX, *p* = .XXX
+- Multiple regression: *F*(df_regression, df_residual) = X.XX, *p* = .XXX, *R*² = .XX
+- Chi-square: χ²(df, *N* = XX) = X.XX, *p* = .XXX, *V* = .XX
+
+EFFECT SIZE INTERPRETATION (Cohen's benchmarks):
+- Cohen's d: small = 0.2, medium = 0.5, large = 0.8
+- r: small = .10, medium = .30, large = .50
+- η²: small = .01, medium = .06, large = .14
+- Cramér's V: same as r
+
+OUTPUT: A single, complete Results paragraph (3-6 sentences) ready to paste into a paper.

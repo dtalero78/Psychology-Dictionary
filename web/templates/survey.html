@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ survey.title }} — Psychology Research Survey</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; }
+    .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+    .header { background: #fff; border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .badge { display: inline-block; background: #e8f4fd; color: #0070c9; font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; margin-bottom: 1rem; letter-spacing: .5px; text-transform: uppercase; }
+    h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.3; }
+    .consent-box { background: #f0f7ff; border-left: 3px solid #0070c9; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; font-size: 0.875rem; color: #444; line-height: 1.6; margin-top: 1rem; }
+    .question-card { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    .question-number { font-size: 0.75rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 0.5rem; }
+    .question-text { font-size: 1rem; font-weight: 500; line-height: 1.5; margin-bottom: 1rem; }
+    .likert-scale { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .likert-option { flex: 1; min-width: 48px; }
+    .likert-option input { display: none; }
+    .likert-option label { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0.75rem 0.5rem; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer; font-size: 0.8rem; color: #666; transition: all .15s; text-align: center; min-height: 64px; justify-content: center; }
+    .likert-option input:checked + label { border-color: #0070c9; background: #e8f4fd; color: #0070c9; font-weight: 600; }
+    .likert-option label:hover { border-color: #0070c9; }
+    .likert-value { font-size: 1.1rem; font-weight: 700; }
+    .text-input { width: 100%; border: 2px solid #e0e0e0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 1rem; font-family: inherit; outline: none; transition: border-color .15s; resize: vertical; }
+    .text-input:focus { border-color: #0070c9; }
+    .select-input { width: 100%; border: 2px solid #e0e0e0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 1rem; font-family: inherit; background: #fff; outline: none; cursor: pointer; transition: border-color .15s; }
+    .select-input:focus { border-color: #0070c9; }
+    .progress-bar { background: #e0e0e0; border-radius: 4px; height: 4px; margin: 1rem 0 2rem; }
+    .progress-fill { background: #0070c9; height: 100%; border-radius: 4px; transition: width .3s; }
+    .submit-btn { width: 100%; background: #0070c9; color: #fff; border: none; border-radius: 12px; padding: 1rem 2rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background .15s; margin-top: 1.5rem; }
+    .submit-btn:hover { background: #005ea3; }
+    .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
+    .error-msg { color: #d32f2f; font-size: 0.875rem; margin-top: 0.5rem; display: none; }
+    .required-star { color: #d32f2f; }
+    #success-screen { display: none; text-align: center; padding: 3rem 1rem; }
+    #success-screen .checkmark { font-size: 3rem; margin-bottom: 1rem; }
+    #success-screen h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    #success-screen p { color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="survey-content">
+      <div class="header">
+        <span class="badge">Psychology Research</span>
+        <h1>{{ survey.title }}</h1>
+        {% if survey.config_json.get('description') %}
+          <p style="color:#555;margin-top:.5rem;line-height:1.6;">{{ survey.config_json.description }}</p>
+        {% endif %}
+        <div class="consent-box">
+          <strong>Informed Consent:</strong> Your participation is voluntary and anonymous. You may withdraw at any time. Responses are used for academic research purposes only. By submitting this survey you consent to participate.
+          {% if survey.config_json.get('estimated_minutes') %}
+            <br><strong>Estimated time:</strong> {{ survey.config_json.estimated_minutes }} minutes
+          {% endif %}
+        </div>
+      </div>
+
+      <form id="survey-form" novalidate>
+        {% set questions = survey.config_json.get('questions', []) %}
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+        {% for q in questions %}
+        <div class="question-card" id="q-card-{{ loop.index }}">
+          <div class="question-number">Question {{ loop.index }} of {{ questions|length }}{% if q.get('required') %} <span class="required-star">*</span>{% endif %}</div>
+          <div class="question-text">{{ q.text }}</div>
+
+          {% if q.type == 'likert' %}
+            <div class="likert-scale">
+              {% for val in range(1, (q.get('scale', 5) + 1)) %}
+              <div class="likert-option">
+                <input type="radio" name="q_{{ loop.index0 }}" id="q{{ loop.index0 }}_{{ val }}" value="{{ val }}" {% if q.get('required') %}required{% endif %}>
+                <label for="q{{ loop.index0 }}_{{ val }}">
+                  <span class="likert-value">{{ val }}</span>
+                  {% if val == 1 %}{{ q.get('anchor_low', 'Strongly Disagree') }}
+                  {% elif val == q.get('scale', 5) %}{{ q.get('anchor_high', 'Strongly Agree') }}
+                  {% endif %}
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+          {% elif q.type == 'text' %}
+            <textarea class="text-input" name="q_{{ loop.index0 }}" placeholder="{{ q.get('placeholder', 'Your answer...') }}" rows="3" {% if q.get('required') %}required{% endif %}></textarea>
+          {% elif q.type == 'select' %}
+            <select class="select-input" name="q_{{ loop.index0 }}" {% if q.get('required') %}required{% endif %}>
+              <option value="">— Select an option —</option>
+              {% for opt in q.get('options', []) %}
+              <option value="{{ opt }}">{{ opt }}</option>
+              {% endfor %}
+            </select>
+          {% elif q.type == 'number' %}
+            <input type="number" class="text-input" name="q_{{ loop.index0 }}" placeholder="{{ q.get('placeholder', 'Enter a number') }}" min="{{ q.get('min', '') }}" max="{{ q.get('max', '') }}" {% if q.get('required') %}required{% endif %}>
+          {% endif %}
+          <div class="error-msg" id="err-{{ loop.index0 }}">This question is required.</div>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="submit-btn" id="submit-btn">Submit Responses</button>
+      </form>
+    </div>
+
+    <div id="success-screen">
+      <div class="checkmark">✅</div>
+      <h2>Thank you!</h2>
+      <p>Your responses have been recorded. You may close this window.</p>
+      {% if survey.config_json.get('debrief_text') %}
+        <div class="consent-box" style="margin-top:1.5rem;text-align:left;">
+          <strong>Debriefing:</strong> {{ survey.config_json.debrief_text }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    const TOKEN = "{{ token }}";
+    const form = document.getElementById('survey-form');
+    const progressFill = document.getElementById('progress-fill');
+    const questions = document.querySelectorAll('.question-card');
+
+    function updateProgress() {
+      const inputs = form.querySelectorAll('input:checked, textarea, select');
+      let answered = 0;
+      form.querySelectorAll('[name]').forEach(el => {
+        if (el.type === 'radio') { if (form.querySelector(`input[name="${el.name}"]:checked`)) answered++; }
+        else if (el.value.trim()) answered++;
+      });
+      const uniqueNames = new Set([...form.querySelectorAll('[name]')].map(e => e.name));
+      const pct = uniqueNames.size ? Math.round((answered / uniqueNames.size) * 100) : 0;
+      progressFill.style.width = pct + '%';
+    }
+
+    form.addEventListener('change', updateProgress);
+    form.addEventListener('input', updateProgress);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      const answers = {};
+      const formData = new FormData(form);
+      for (const [key, value] of formData.entries()) answers[key] = value;
+      form.querySelectorAll('input[type="radio"]:checked').forEach(el => answers[el.name] = el.value);
+
+      try {
+        const resp = await fetch(`/s/${TOKEN}/respond`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers }),
+        });
+        if (resp.ok) {
+          document.getElementById('survey-content').style.display = 'none';
+          document.getElementById('success-screen').style.display = 'block';
+        } else {
+          const data = await resp.json();
+          alert(data.error || 'Submission failed. Please try again.');
+          btn.disabled = false;
+          btn.textContent = 'Submit Responses';
+        }
+      } catch {
+        alert('Network error. Please check your connection and try again.');
+        btn.disabled = false;
+        btn.textContent = 'Submit Responses';
+      }
+    });
+  </script>
+</body>
+</html>

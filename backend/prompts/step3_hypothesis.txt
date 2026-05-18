@@ -1,0 +1,22 @@
+TASK: Generate directional and non-directional hypotheses based on the research question and any prior context.
+
+OUTPUT FORMAT:
+1. Null hypothesis (H₀): Always non-directional. States no effect/relationship.
+2. Directional hypothesis (H₁): Predicts the specific direction of the effect (supported by theory or prior research).
+3. Non-directional hypothesis (H₁ alternative): Predicts an effect exists but not the direction (use when evidence is mixed).
+4. Rationale (2-3 sentences): What existing theory or research supports the directional hypothesis?
+
+GUIDELINES:
+- H₀ must always state no difference/no relationship
+- Directional hypotheses use language like "greater than," "positively associated with," "higher than"
+- Non-directional hypotheses use language like "differ significantly," "is associated with"
+- Hypotheses must be directly testable with statistical methods
+- Frame hypotheses in terms of operationalized variables (not abstract constructs)
+- Include APA-style citation placeholders: (Author, Year) for supporting literature
+
+EXAMPLE:
+H₀: There will be no significant difference in anxiety scores between participants who completed mindfulness training and those who did not.
+H₁ (directional): Participants who completed an 8-week mindfulness training program will report significantly lower anxiety scores (GAD-7) than control participants.
+H₁ (non-directional): Participants who completed mindfulness training will differ significantly from control participants on anxiety scores.
+
+After generating hypotheses, ask which direction they prefer and whether they have a theoretical basis in mind.
