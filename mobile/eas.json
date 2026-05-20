@@ -12,7 +12,7 @@
         "buildConfiguration": "Debug"
       },
       "env": {
-        "EXPO_PUBLIC_REVENUECAT_API_KEY": "appl_REPLACE_WITH_YOUR_KEY"
+        "EXPO_PUBLIC_REVENUECAT_API_KEY": "appl_fVINfqlRVhYVPLTCSARjhxUCEPy"
       }
     },
     "preview": {
@@ -21,7 +21,7 @@
         "buildConfiguration": "Release"
       },
       "env": {
-        "EXPO_PUBLIC_REVENUECAT_API_KEY": "appl_REPLACE_WITH_YOUR_KEY"
+        "EXPO_PUBLIC_REVENUECAT_API_KEY": "appl_fVINfqlRVhYVPLTCSARjhxUCEPy"
       }
     },
     "production": {
@@ -30,7 +30,7 @@
         "buildConfiguration": "Release"
       },
       "env": {
-        "EXPO_PUBLIC_REVENUECAT_API_KEY": "appl_REPLACE_WITH_YOUR_KEY",
+        "EXPO_PUBLIC_REVENUECAT_API_KEY": "appl_fVINfqlRVhYVPLTCSARjhxUCEPy",
         "EXPO_PUBLIC_API_URL": "https://api.psychologydictionary.app"
       }
     }
