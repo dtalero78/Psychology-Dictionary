@@ -30,9 +30,18 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     connectable = engine_from_config(config.get_section(config.config_ini_section, {}), prefix="sqlalchemy.", poolclass=pool.NullPool)
+
+    # PostgreSQL 15+ revokes CREATE on public schema from non-owner roles.
+    # Commit the GRANT in a dedicated AUTOCOMMIT connection so it is visible
+    # to the separate migration connection that opens immediately after.
+    with connectable.connect().execution_options(isolation_level="AUTOCOMMIT") as grant_conn:
+        try:
+            grant_conn.execute(text("GRANT CREATE ON SCHEMA public TO CURRENT_USER"))
+            print("[migrate] Granted CREATE on schema public")
+        except Exception as exc:
+            print(f"[migrate] Could not grant schema CREATE (continuing): {exc}")
+
     with connectable.connect() as connection:
-        connection.execute(text("GRANT CREATE ON SCHEMA public TO CURRENT_USER"))
-        connection.execute(text("GRANT USAGE ON SCHEMA public TO CURRENT_USER"))
         context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
