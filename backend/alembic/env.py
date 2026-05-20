@@ -35,11 +35,23 @@ def run_migrations_online() -> None:
     # the public schema from non-owner users. We create a user-owned schema
     # "psydict" and set search_path so all tables land there instead.
     with connectable.connect().execution_options(isolation_level="AUTOCOMMIT") as setup_conn:
+        # Probe which schemas exist and which ones we can write to
         try:
-            setup_conn.execute(text("CREATE SCHEMA IF NOT EXISTS psydict"))
-            print("[migrate] Schema psydict ready")
+            rows = setup_conn.execute(text(
+                "SELECT current_user, session_user, "
+                "has_database_privilege(current_database(), 'CREATE') as db_create"
+            )).fetchone()
+            print(f"[migrate] user={rows[0]} session={rows[1]} db_create={rows[2]}")
+            schemas = setup_conn.execute(text(
+                "SELECT nspname, pg_get_userbyid(nspowner) as owner, "
+                "has_schema_privilege(current_user, nspname, 'CREATE') as can_create "
+                "FROM pg_namespace WHERE nspname NOT LIKE 'pg_%' AND nspname != 'information_schema' "
+                "ORDER BY nspname"
+            )).fetchall()
+            for s in schemas:
+                print(f"[migrate] schema={s[0]} owner={s[1]} can_create={s[2]}")
         except Exception as exc:
-            print(f"[migrate] Schema creation warning (continuing): {exc}")
+            print(f"[migrate] probe error: {exc}")
 
     with connectable.connect() as connection:
         connection.execute(text("SET search_path TO psydict, public"))
