@@ -19,7 +19,8 @@ services:
     run_command: sh -c "alembic upgrade head && gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --timeout 120"
     envs:
       - key: DATABASE_URL
-        value: ${db.DATABASE_URL}
+        value: REPLACE_ME
+        type: SECRET
       - key: ENVIRONMENT
         value: production
       - key: BASE_URL
@@ -49,12 +50,6 @@ services:
       - key: REVENUECAT_API_KEY
         value: REPLACE_ME
         type: SECRET
-
-databases:
-  - name: db
-    engine: PG
-    version: "14"
-    production: false
 
 domains:
   - domain: api.psychologydictionary.app

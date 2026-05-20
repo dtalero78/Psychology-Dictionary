@@ -1,6 +1,6 @@
 import os
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, pool, text
 from alembic import context
 from dotenv import load_dotenv
 
@@ -30,7 +30,15 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     connectable = engine_from_config(config.get_section(config.config_ini_section, {}), prefix="sqlalchemy.", poolclass=pool.NullPool)
+
+    # All psydict tables live in the "psydict" schema so they don't collide
+    # with other projects sharing the same PostgreSQL cluster (e.g. BRS).
+    # doadmin (superuser) can CREATE SCHEMA, so this works on DO managed DBs.
+    with connectable.connect().execution_options(isolation_level="AUTOCOMMIT") as setup_conn:
+        setup_conn.execute(text("CREATE SCHEMA IF NOT EXISTS psydict"))
+
     with connectable.connect() as connection:
+        connection.execute(text("SET search_path TO psydict, public"))
         context.configure(connection=connection, target_metadata=target_metadata)
         with context.begin_transaction():
             context.run_migrations()
