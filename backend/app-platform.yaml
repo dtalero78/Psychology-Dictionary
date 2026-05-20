@@ -53,7 +53,7 @@ services:
 databases:
   - name: db
     engine: PG
-    version: "16"
+    version: "14"
     production: false
 
 domains:
