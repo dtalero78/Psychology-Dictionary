@@ -97,10 +97,10 @@ const styles = StyleSheet.create({
   card: { backgroundColor: '#fff', borderRadius: 14, padding: 16, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 8 },
   cardTitle: { flex: 1, fontSize: 16, fontWeight: '600', color: '#1d1d1f' },
-  statusBadge: { backgroundColor: '#e8f4fd', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+  statusBadge: { backgroundColor: '#dce6f5', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
   statusCompleted: { backgroundColor: '#e8f5e9' },
-  statusText: { fontSize: 12, fontWeight: '600', color: '#0070c9' },
+  statusText: { fontSize: 12, fontWeight: '600', color: '#004AAE' },
   cardDate: { fontSize: 13, color: '#888' },
-  fab: { position: 'absolute', bottom: 24, left: 20, right: 20, backgroundColor: '#0070c9', borderRadius: 14, paddingVertical: 16, alignItems: 'center', shadowColor: '#0070c9', shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 },
+  fab: { position: 'absolute', bottom: 24, left: 20, right: 20, backgroundColor: '#004AAE', borderRadius: 14, paddingVertical: 16, alignItems: 'center', shadowColor: '#004AAE', shadowOpacity: 0.3, shadowRadius: 12, elevation: 8 },
   fabText: { color: '#fff', fontSize: 17, fontWeight: '700' },
 });

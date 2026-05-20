@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '700', color: '#1d1d1f', textAlign: 'center', marginBottom: 4 },
   subtitle: { fontSize: 16, color: '#666', textAlign: 'center', marginBottom: 40 },
   input: { backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, marginBottom: 12, borderWidth: 1.5, borderColor: '#e0e0e0' },
-  btn: { backgroundColor: '#0070c9', borderRadius: 12, paddingVertical: 15, alignItems: 'center', marginBottom: 20 },
+  btn: { backgroundColor: '#004AAE', borderRadius: 12, paddingVertical: 15, alignItems: 'center', marginBottom: 20 },
   btnDisabled: { backgroundColor: '#aaa' },
   btnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  link: { textAlign: 'center', color: '#0070c9', fontSize: 14 },
+  link: { textAlign: 'center', color: '#004AAE', fontSize: 14 },
 });

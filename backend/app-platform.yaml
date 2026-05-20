@@ -1,0 +1,61 @@
+name: psydict-api
+region: nyc
+
+services:
+  - name: api
+    github:
+      repo: dtalero78/Psychology-Dictionary
+      branch: main
+      deploy_on_push: true
+    source_dir: /backend
+    dockerfile_path: Dockerfile
+    http_port: 8000
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 20
+      period_seconds: 30
+    run_command: sh -c "alembic upgrade head && gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --timeout 120"
+    envs:
+      - key: DATABASE_URL
+        value: ${db.DATABASE_URL}
+      - key: ENVIRONMENT
+        value: production
+      - key: BASE_URL
+        value: https://api.psychologydictionary.app
+      - key: CORS_ORIGINS
+        value: https://api.psychologydictionary.app
+      - key: APNS_BUNDLE_ID
+        value: com.psychologydictionary.app
+      - key: APNS_USE_SANDBOX
+        value: "false"
+      - key: APPLE_TEAM_ID
+        value: F8YFJ2J4T2
+      - key: APNS_TEAM_ID
+        value: F8YFJ2J4T2
+      - key: SPACES_BUCKET
+        value: psydict-documents
+      - key: SPACES_REGION
+        value: nyc3
+      - key: SPACES_ENDPOINT
+        value: https://nyc3.digitaloceanspaces.com
+      - key: SECRET_KEY
+        value: REPLACE_ME
+        type: SECRET
+      - key: ANTHROPIC_API_KEY
+        value: REPLACE_ME
+        type: SECRET
+      - key: REVENUECAT_API_KEY
+        value: REPLACE_ME
+        type: SECRET
+
+databases:
+  - name: db
+    engine: PG
+    version: "16"
+    production: false
+
+domains:
+  - domain: api.psychologydictionary.app
+    type: PRIMARY

@@ -32,29 +32,38 @@ def _effect_label(d: float, metric: str = "d") -> str:
 def run_independent_ttest(group1: list[float], group2: list[float]) -> dict[str, Any]:
     t, p = scipy_stats.ttest_ind(group1, group2)
     d = _cohens_d(group1, group2)
-    ci = scipy_stats.t.interval(0.95, df=len(group1) + len(group2) - 2, loc=float(t), scale=1.0)
+    n1, n2 = len(group1), len(group2)
+    df = n1 + n2 - 2
+    mean_diff = float(np.mean(group1) - np.mean(group2))
+    se = float(np.sqrt(np.var(group1, ddof=1) / n1 + np.var(group2, ddof=1) / n2))
+    ci = scipy_stats.t.interval(0.95, df=df, loc=mean_diff, scale=se)
     return {
         "statistic": float(t),
         "p_value": float(p),
         "effect_size": d,
         "effect_label": _effect_label(d, "d"),
-        "ci_95": list(ci),
-        "df": len(group1) + len(group2) - 2,
+        "ci_95": [float(ci[0]), float(ci[1])],
+        "df": df,
+        "mean_difference": mean_diff,
     }
 
 
 def run_paired_ttest(pre: list[float], post: list[float]) -> dict[str, Any]:
     t, p = scipy_stats.ttest_rel(pre, post)
     diffs = np.array(post) - np.array(pre)
-    d = float(np.mean(diffs) / np.std(diffs, ddof=1)) if np.std(diffs, ddof=1) > 0 else 0.0
-    ci = scipy_stats.t.interval(0.95, df=len(pre) - 1, loc=float(t), scale=1.0)
+    sd_diff = float(np.std(diffs, ddof=1))
+    d = float(np.mean(diffs) / sd_diff) if sd_diff > 0 else 0.0
+    df = len(pre) - 1
+    se_diff = sd_diff / np.sqrt(len(pre))
+    ci = scipy_stats.t.interval(0.95, df=df, loc=float(np.mean(diffs)), scale=float(se_diff))
     return {
         "statistic": float(t),
         "p_value": float(p),
         "effect_size": abs(d),
         "effect_label": _effect_label(abs(d), "d"),
-        "ci_95": list(ci),
-        "df": len(pre) - 1,
+        "ci_95": [float(ci[0]), float(ci[1])],
+        "df": df,
+        "mean_difference": float(np.mean(diffs)),
     }
 
 

@@ -59,6 +59,8 @@ export interface SurveyQuestion {
   options?: string[];
   required?: boolean;
   placeholder?: string;
+  min?: number;
+  max?: number;
 }
 
 export interface AnalysisResult {

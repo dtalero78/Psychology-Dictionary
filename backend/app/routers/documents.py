@@ -13,6 +13,23 @@ from ..services import claude_service, document_service
 router = APIRouter(prefix="/documents", tags=["documents"])
 
 
+@router.get("/by-project/{project_id}", response_model=ApiResponse[list[DocumentOut]])
+def list_documents(project_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    project = db.query(Project).filter(Project.id == project_id, Project.user_id == user.id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    docs = (
+        db.query(ApaDocument)
+        .filter(ApaDocument.project_id == project_id)
+        .order_by(ApaDocument.created_at.desc())
+        .all()
+    )
+    return ApiResponse.ok([DocumentOut(
+        id=d.id, project_id=d.project_id, content_json=d.content_json,
+        pdf_url=d.pdf_url, docx_url=d.docx_url, created_at=d.created_at.isoformat(),
+    ) for d in docs])
+
+
 @router.post("", response_model=ApiResponse[DocumentOut])
 async def generate_document(body: DocumentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     project = db.query(Project).filter(Project.id == body.project_id, Project.user_id == user.id).first()

@@ -29,6 +29,15 @@ def _survey_out(s: Survey) -> SurveyOut:
     )
 
 
+@router.get("/by-project/{project_id}", response_model=ApiResponse[list[SurveyOut]])
+def list_surveys_by_project(project_id: str, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    project = db.query(Project).filter(Project.id == project_id, Project.user_id == user.id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    surveys = db.query(Survey).filter(Survey.project_id == project_id).order_by(Survey.created_at.desc()).all()
+    return ApiResponse.ok([_survey_out(s) for s in surveys])
+
+
 @router.post("", response_model=ApiResponse[SurveyOut])
 def create_survey(body: SurveyCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     project = db.query(Project).filter(Project.id == body.project_id, Project.user_id == user.id).first()

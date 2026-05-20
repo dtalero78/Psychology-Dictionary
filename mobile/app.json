@@ -16,7 +16,14 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.psychologydictionary.app",
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSUserNotificationUsageDescription": "We'll notify you when your survey receives new responses.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "entitlements": {
+        "com.apple.developer.in-app-payments": []
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -35,10 +42,17 @@
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
-          "color": "#0070c9"
+          "color": "#00BDB6"
         }
       ],
       "expo-apple-authentication"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bae82248-3595-40f8-bb42-415cb2739672"
+      }
+    },
+    "owner": "dtalero"
   }
 }

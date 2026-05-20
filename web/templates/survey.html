@@ -1,169 +1,1247 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ survey.title }} — Psychology Research Survey</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; min-height: 100vh; }
-    .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 4rem; }
-    .header { background: #fff; border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-    .badge { display: inline-block; background: #e8f4fd; color: #0070c9; font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; margin-bottom: 1rem; letter-spacing: .5px; text-transform: uppercase; }
-    h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.3; }
-    .consent-box { background: #f0f7ff; border-left: 3px solid #0070c9; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; font-size: 0.875rem; color: #444; line-height: 1.6; margin-top: 1rem; }
-    .question-card { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
-    .question-number { font-size: 0.75rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 0.5rem; }
-    .question-text { font-size: 1rem; font-weight: 500; line-height: 1.5; margin-bottom: 1rem; }
-    .likert-scale { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .likert-option { flex: 1; min-width: 48px; }
-    .likert-option input { display: none; }
-    .likert-option label { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0.75rem 0.5rem; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer; font-size: 0.8rem; color: #666; transition: all .15s; text-align: center; min-height: 64px; justify-content: center; }
-    .likert-option input:checked + label { border-color: #0070c9; background: #e8f4fd; color: #0070c9; font-weight: 600; }
-    .likert-option label:hover { border-color: #0070c9; }
-    .likert-value { font-size: 1.1rem; font-weight: 700; }
-    .text-input { width: 100%; border: 2px solid #e0e0e0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 1rem; font-family: inherit; outline: none; transition: border-color .15s; resize: vertical; }
-    .text-input:focus { border-color: #0070c9; }
-    .select-input { width: 100%; border: 2px solid #e0e0e0; border-radius: 10px; padding: 0.75rem 1rem; font-size: 1rem; font-family: inherit; background: #fff; outline: none; cursor: pointer; transition: border-color .15s; }
-    .select-input:focus { border-color: #0070c9; }
-    .progress-bar { background: #e0e0e0; border-radius: 4px; height: 4px; margin: 1rem 0 2rem; }
-    .progress-fill { background: #0070c9; height: 100%; border-radius: 4px; transition: width .3s; }
-    .submit-btn { width: 100%; background: #0070c9; color: #fff; border: none; border-radius: 12px; padding: 1rem 2rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background .15s; margin-top: 1.5rem; }
-    .submit-btn:hover { background: #005ea3; }
-    .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
-    .error-msg { color: #d32f2f; font-size: 0.875rem; margin-top: 0.5rem; display: none; }
-    .required-star { color: #d32f2f; }
-    #success-screen { display: none; text-align: center; padding: 3rem 1rem; }
-    #success-screen .checkmark { font-size: 3rem; margin-bottom: 1rem; }
-    #success-screen h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
-    #success-screen p { color: #666; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>{{ survey.title }} — Psychology Research Survey</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23f3efe4'/%3E%3Ctext x='8' y='12' font-family='Georgia,serif' font-size='12' font-style='italic' text-anchor='middle' fill='%2314161d'%3E%CE%A8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&display=swap" rel="stylesheet">
+<style>
+  /* -------- Berkeley Brand Tokens -------- */
+  :root{
+    --ink:          #232830;
+    --ink-2:        #2c303c;
+    --ink-3:        #546072;
+    --ink-4:        #8a8f9d;
+    --rule:         #c8deda;
+    --rule-soft:    #e0f0ed;
+    --rule-strong:  #8EE8D8;
+    --paper:        #ffffff;
+    --paper-2:      #f2fbf9;
+    --paper-3:      #dff2ee;
+    --card:         #ffffff;
+
+    /* Berkeley Blue Medium — interactive elements, progress, buttons */
+    --blue:         #00BDB6;
+    /* Berkeley Blue — headings, bold anchors */
+    --blue-ink:     #133844;
+    /* Blue tints */
+    --blue-tint:    #D1F9F1;
+    --blue-edge:    #8EE8D8;
+    /* Heritage Gold — Roman numerals, decorative accents */
+    --gold:         #ffb81c;
+    /* California Gold — bright accent */
+    --gold-soft:    #f5a623;
+    /* California Gold — for seal / crest accents */
+    --cal-gold:     #8EE8D8;
+
+    --serif: "Source Serif 4", "Iowan Old Style", "Charter", "Georgia", "Times New Roman", serif;
+    --sans:  system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; }
+  html{ -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body{
+    font: 400 16px/1.6 var(--sans);
+    color: var(--ink);
+    background: var(--paper);
+    background-image:
+      radial-gradient(ellipse at 8% -5%, rgba(0,189,182,.06), transparent 38%),
+      radial-gradient(ellipse at 105% 5%, rgba(255,184,28,.07), transparent 35%),
+      repeating-linear-gradient(0deg, rgba(0,189,182,.06) 0 1px, transparent 1px 3px);
+    min-height: 100svh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+  ::selection{ background: var(--blue); color:#fff; }
+
+  /* -------- Sticky progress -------- */
+  .progress{
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .progress-track{
+    position: relative;
+    height: 4px;
+    background: rgba(0,189,182,.12);
+    box-shadow: inset 0 1px 0 rgba(0,189,182,.06);
+  }
+  .progress-track > i{
+    position: absolute; inset: 0 auto 0 0; width: 0%;
+    background: linear-gradient(90deg, var(--blue) 0%, #8EE8D8 100%);
+    box-shadow: 0 0 0 1px rgba(0,189,182,.18), 0 1px 0 rgba(0,189,182,.22) inset;
+    transition: width 600ms cubic-bezier(.22,.61,.36,1);
+  }
+  .progress-meta{
+    display:flex; align-items: center; justify-content: space-between;
+    max-width: 720px; margin: 0 auto;
+    padding: 11px 26px;
+    font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .progress-meta .left{ display:flex; align-items:center; gap:8px; min-width:0; }
+  .progress-meta .left b{ color: var(--ink); font-weight: 600; font-family: var(--serif); letter-spacing: .04em; font-size: 12px; }
+  .progress-meta .left .dot{ width:4px;height:4px;border-radius:50%;background:var(--ink-4); }
+  .progress-meta .right b{ color: var(--ink); font-weight: 600; }
+  .progress-meta .right .req{ color: var(--ink-4); font-weight: 500; letter-spacing: .18em; }
+
+  /* -------- Page wrap -------- */
+  .wrap{ max-width: 720px; margin: 0 auto; padding: 56px 26px 120px; }
+
+  /* -------- Masthead -------- */
+  .masthead{ position: relative; padding-bottom: 36px; margin-bottom: 0; }
+  .masthead::after{
+    content:""; display:block;
+    margin-top: 32px;
+    height: 4px;
+    background:
+      linear-gradient(to bottom, var(--ink) 0 1px, transparent 1px 3px, var(--ink) 3px 4px);
+  }
+  .crest{
+    display:flex; align-items:center; gap:12px;
+    color: var(--ink-2);
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .crest .seal{
+    width: 30px; height: 30px;
+    border: 1px solid var(--blue-ink);
+    background: var(--blue-tint);
+    display:grid; place-items:center;
+    font-family: var(--serif); font-style: italic;
+    color: var(--blue-ink);
+    font-weight: 600; font-size: 19px;
+    line-height: 1;
+    box-shadow: inset 0 0 0 2px var(--paper);
+  }
+  .crest .pipe{ width:1px; height: 12px; background: var(--ink-3); opacity:.4; }
+  .crest .dim{ color: var(--ink-3); font-weight: 500; }
+
+  h1.title{
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 44px;
+    line-height: 1.08;
+    letter-spacing: -.012em;
+    color: var(--blue-ink);
+    margin: 26px 0 16px;
+    max-width: 22ch;
+    text-wrap: balance;
+    font-feature-settings: "liga" 1, "dlig" 1;
+  }
+  h1.title em{ font-style: italic; color: var(--ink-2); }
+  .subtitle{
+    font-family: var(--sans);
+    color: var(--ink-2);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 60ch;
+    text-wrap: pretty;
+    margin: 0;
+  }
+  .subtitle em{ font-family: var(--serif); font-style: italic; color: var(--ink); }
+
+  .meta-row{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    margin-top: 28px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 0;
+  }
+  .meta-row > div{
+    padding: 0 18px;
+    border-right: 1px solid var(--rule-soft);
+  }
+  .meta-row > div:first-child{ padding-left: 0; }
+  .meta-row > div:last-child{ border-right: 0; padding-right: 0; }
+  .meta-row .k{
+    display:block;
+    font-family: var(--sans);
+    font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .meta-row .v{
+    color: var(--ink); font-weight: 500;
+    font-family: var(--serif);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums oldstyle-nums;
+  }
+
+  /* -------- Consent (details) -------- */
+  details.consent{
+    margin: 28px 0 0;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--card);
+    overflow: hidden;
+    transition: box-shadow 220ms ease, border-color 220ms ease;
+  }
+  details.consent.flash{
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(0,189,182,.16);
+    animation: consentFlash 1400ms ease;
+  }
+  @keyframes consentFlash{
+    0%, 100%{ box-shadow: 0 0 0 4px rgba(0,189,182,.16); }
+    50%     { box-shadow: 0 0 0 10px rgba(0,189,182,.05); }
+  }
+  details.consent > summary{
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 18px;
+    display:grid;
+    grid-template-columns: 22px 1fr auto;
+    align-items:center;
+    gap:14px;
+    font-family: var(--sans);
+    font-size: 13.5px; font-weight: 600; color: var(--ink);
+    transition: background 160ms ease;
+  }
+  details.consent > summary:hover{ background: var(--paper-2); }
+  details.consent > summary::-webkit-details-marker{ display:none; }
+  details.consent > summary::marker{ display:none; content:""; }
+  details.consent > summary .ico{
+    font-family: var(--serif); font-weight: 600;
+    color: var(--blue); font-size: 13px;
+    text-align:center; line-height: 1;
+    border: 1px solid var(--blue-edge);
+    background: var(--blue-tint);
+    width: 22px; height: 22px;
+    display:inline-grid; place-items:center;
+    border-radius: 2px;
+  }
+  details.consent > summary .lbl{ display:flex; flex-direction:column; gap:2px; min-width: 0; }
+  details.consent > summary .lbl small{
+    font-family: var(--serif); font-style: italic;
+    font-weight: 400; color: var(--ink-3);
+    font-size: 12px; text-transform: none;
+  }
+  details.consent > summary .chev{
+    color: var(--ink-3);
+    font-family: var(--sans);
+    font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+    font-weight: 600;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  details.consent > summary .chev svg{ transition: transform 220ms ease; }
+  details.consent[open] > summary .chev svg{ transform: rotate(180deg); }
+  details.consent[open] > summary .chev{ color: var(--blue); }
+  details.consent[open] > summary{ border-bottom: 1px solid var(--rule-soft); }
+  details.consent[open] > summary .chev .open-lbl{ display:none; }
+  details.consent > summary .chev .open-lbl{ display:inline; }
+  details.consent[open] > summary .chev .close-lbl{ display:inline; }
+  details.consent > summary .chev .close-lbl{ display:none; }
+  details.consent.acknowledged > summary .ico{
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+  }
+  details.consent .body{
+    padding: 8px 22px 22px;
+    color: var(--ink-2);
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+  details.consent .body p{ margin: 14px 0; }
+  details.consent .body h4{
+    font-family: var(--serif);
+    font-size: 13px; font-style: italic;
+    color: var(--ink); font-weight: 500;
+    margin: 22px 0 4px;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  details.consent .body h4::before{
+    content: "";
+    width: 18px; height: 1px;
+    background: var(--gold);
+    flex-shrink: 0;
+    transform: translateY(-4px);
+  }
+  details.consent .body ul{ margin: 8px 0 0; padding-left: 20px; }
+  details.consent .body li{ margin: 4px 0; }
+  details.consent .body a{ color: var(--blue); }
+
+  /* -------- Questions -------- */
+  .questions{ margin-top: 48px; }
+  .q{
+    border: 0; padding: 0; margin: 0;
+    display: grid;
+    grid-template-columns: 68px 1fr;
+    gap: 0 24px;
+    padding: 34px 0 36px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .q:last-of-type{ border-bottom: 0; }
+
+  .q-num{
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 42px;
+    line-height: 1;
+    color: var(--gold);
+    letter-spacing: -.01em;
+    font-variant-numeric: lining-nums;
+    padding-top: 2px;
+    user-select: none;
+  }
+  .q-num sup{
+    font-size: 14px;
+    color: var(--ink-4);
+    font-style: italic;
+    vertical-align: super;
+    margin-left: 2px;
+  }
+  .q-num .req{
+    display: inline-block;
+    vertical-align: super;
+    margin-left: 2px;
+    font-size: 14px;
+    color: var(--blue);
+    font-style: normal;
+    font-family: var(--sans);
+    font-weight: 500;
+  }
+  .q-body{ min-width: 0; }
+  .q-text{
+    font-family: var(--sans);
+    font-size: 17.5px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0;
+    font-weight: 450;
+    letter-spacing: -.002em;
+  }
+  .q-text em{ font-family: var(--serif); font-style: italic; }
+  .q-tag{
+    display: inline-block;
+    font-family: var(--serif); font-style: italic;
+    font-size: 13.5px; color: var(--ink-3);
+    margin-left: 6px;
+    font-weight: 400;
+  }
+  .q-hint{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13.5px;
+    color: var(--ink-3);
+    margin: 8px 0 0;
+  }
+  .q-error{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: #c0392b;
+    margin-top: 10px;
+    display: none;
+  }
+  .q-error.show{ display: block; }
+
+  /* -------- Likert -------- */
+  .likert{ margin-top: 22px; }
+  .likert-rule{ position: relative; padding: 14px 0 10px; }
+  .likert-rule::before{
+    content: "";
+    position: absolute;
+    left: calc(100% / var(--steps) / 2);
+    right: calc(100% / var(--steps) / 2);
+    top: 65px;
+    height: 1px;
+    background: repeating-linear-gradient(to right, var(--rule-strong) 0 4px, transparent 4px 8px);
+    opacity: .55;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .likert-scale{
+    display: grid;
+    grid-template-columns: repeat(var(--steps, 5), 1fr);
+    position: relative;
+    z-index: 1;
+  }
+  .likert-opt{ position: relative; }
+  .likert-opt input{
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    margin: 0; padding: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .likert-opt label{
+    display:flex; flex-direction: column; align-items: center;
+    gap: 12px;
+    padding: 10px 2px 14px;
+    min-height: 56px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: none;
+    position: relative;
+    z-index: 2;
+  }
+  .likert-opt label .num{
+    font-family: var(--serif);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-size: 17px; font-weight: 500;
+    color: var(--ink-3);
+    line-height: 1;
+    transition: color 160ms ease;
+  }
+  .likert-opt label .dot{
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--paper-2);
+    border: 1.5px solid var(--rule-strong);
+    transition: all 160ms ease;
+    pointer-events: none;
+  }
+  .likert-opt input:hover + label .dot{ border-color: var(--blue); background: #fff; }
+  .likert-opt input:hover + label .num{ color: var(--ink); }
+  .likert-opt input:focus-visible + label .dot{ outline: 2px solid var(--blue); outline-offset: 3px; }
+  .likert-opt input:checked + label .num{ color: var(--blue-ink); font-weight: 600; }
+  .likert-opt input:checked + label .dot{
+    background: var(--blue);
+    border-color: var(--blue);
+    box-shadow: 0 0 0 5px rgba(0,189,182,.16);
+  }
+
+  .likert-anchors{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 18px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  .likert-anchors span{ display: inline-flex; align-items: center; gap: 8px; }
+  .likert-anchors .a-left{ justify-self: start; }
+  .likert-anchors .a-mid{ justify-self: center; color: var(--ink-4); }
+  .likert-anchors .a-right{ justify-self: end; }
+  .likert-anchors .a-left::before{ content:"—"; color: var(--rule-strong); margin-right: 6px; font-style: normal; }
+  .likert-anchors .a-right::after{ content:"—"; color: var(--rule-strong); margin-left: 6px; font-style: normal; }
+
+  /* -------- Text / number inputs -------- */
+  .input-frame{
+    margin-top: 14px;
+    border: 1px solid var(--rule);
+    background: var(--paper-2);
+    border-radius: 2px;
+    transition: all 160ms ease;
+  }
+  .input-frame:focus-within{
+    border-color: var(--blue);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(0,189,182,.12);
+  }
+  .input-frame input,
+  .input-frame textarea{
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 14px 16px;
+    font: 400 16px/1.55 var(--sans);
+    color: var(--ink);
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 2px;
+    outline: 0;
+  }
+  .input-frame textarea{ min-height: 110px; resize: vertical; line-height: 1.6; padding: 14px 16px; }
+  .input-frame input::placeholder,
+  .input-frame textarea::placeholder{
+    color: var(--ink-4);
+    font-style: italic;
+    font-family: var(--serif);
+    font-size: 15.5px;
+  }
+  .char-count{
+    text-align: right;
+    font-size: 12px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+    font-family: var(--serif); font-style: italic;
+    padding: 4px 8px;
+  }
+
+  .select-wrap{ position: relative; margin-top: 14px; }
+  .select-wrap select{
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--rule-strong);
+    background: transparent;
+    padding: 10px 32px 12px 0;
+    font: 400 16px/1.55 var(--sans);
+    color: var(--ink);
+    transition: all 160ms ease;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
+  .select-wrap select:focus{
+    outline: none;
+    border-color: var(--blue);
+    background: var(--paper-2);
+  }
+  .select-wrap::after{
+    content:""; position:absolute; right: 6px; top: 50%;
+    width: 8px; height: 8px;
+    border-right: 1.5px solid var(--ink-2);
+    border-bottom: 1.5px solid var(--ink-2);
+    transform: translateY(-80%) rotate(45deg);
+    pointer-events: none;
+  }
+
+  /* -------- Final submit area -------- */
+  .actions{
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 4px double var(--rule-strong);
+    display:flex; flex-direction: column; gap: 18px;
+  }
+  .actions-kicker{
+    font-family: var(--sans);
+    font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .actions-kicker::before,
+  .actions-kicker::after{ content:""; flex:1; height: 1px; background: var(--rule); }
+
+  /* -------- Consent attestation -------- */
+  .attest{
+    border: 1px solid var(--rule);
+    background: var(--card);
+    border-radius: 2px;
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 14px;
+    align-items: flex-start;
+    transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
+    position: relative;
+  }
+  .attest .corner{
+    position: absolute;
+    top: -1px; right: -1px;
+    font-family: var(--sans);
+    font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase;
+    font-weight: 600;
+    color: var(--ink-4);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-top-width: 0; border-right-width: 0;
+    padding: 4px 8px 4px 9px;
+    border-radius: 0 2px 0 4px;
+  }
+  .attest.checked{
+    border-color: var(--blue-edge);
+    background: linear-gradient(180deg, var(--card), var(--blue-tint));
+    box-shadow: 0 0 0 3px rgba(0,189,182,.10);
+  }
+  .attest.flash{
+    animation: attestFlash 1200ms ease;
+    border-color: var(--blue);
+  }
+  @keyframes attestFlash{
+    0%, 100%{ box-shadow: 0 0 0 3px rgba(0,189,182,.10); }
+    35%     { box-shadow: 0 0 0 10px rgba(0,189,182,.18); }
+  }
+  .attest input[type="checkbox"]{
+    position: absolute;
+    width: 22px; height: 22px;
+    margin: 0; opacity: 0; cursor: pointer;
+    top: 18px; left: 20px;
+    z-index: 2;
+  }
+  .attest .box{
+    width: 22px; height: 22px;
+    border: 1.5px solid var(--rule-strong);
+    background: #fff;
+    border-radius: 3px;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 160ms ease;
+  }
+  .attest .box svg{
+    width: 14px; height: 14px;
+    opacity: 0;
+    transform: scale(.6);
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+  .attest input:hover + .box{ border-color: var(--blue); }
+  .attest input:focus-visible + .box{ outline: 2px solid var(--blue); outline-offset: 3px; }
+  .attest input:checked + .box{ background: var(--blue); border-color: var(--blue); }
+  .attest input:checked + .box svg{ opacity: 1; transform: scale(1); color: #fff; }
+  .attest label{
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--ink);
+    user-select: none;
+  }
+  .attest label .head{
+    display: block;
+    font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase;
+    font-weight: 600;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+  .attest label .head .req-mark{ color: var(--blue); margin-left: 4px; }
+  .attest label em{ font-family: var(--serif); font-style: italic; }
+  .attest label a{ color: var(--blue); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .attest .signed{
+    margin-top: 12px;
+    display: none;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--ink-3);
+    border-top: 1px dashed var(--rule);
+    padding-top: 10px;
+  }
+  .attest.checked .signed{ display: flex; }
+  .attest .signed .x{
+    font-family: var(--serif); font-style: italic;
+    color: var(--blue-ink); font-weight: 600;
+    font-size: 16px;
+    border-bottom: 1px solid var(--ink-3);
+    padding: 0 14px 1px;
+    transform: rotate(-2deg);
+    display: inline-block;
+  }
+
+  .submit-reason{
+    display: none;
+    align-items: baseline;
+    gap: 10px;
+    font-family: var(--serif); font-style: italic;
+    font-size: 13.5px;
+    color: var(--ink-3);
+    margin-top: -8px;
+  }
+  .submit-reason.show{ display: inline-flex; }
+  .submit-reason .marker{ font-family: var(--sans); font-style: normal; color: var(--blue); font-weight: 600; font-size: 12px; }
+
+  button.submit{
+    appearance: none; border: 0; cursor: pointer;
+    background: var(--blue);
+    color: #fff;
+    font: 600 16px/1 var(--sans);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 26px 28px;
+    border-radius: 3px;
+    transition: transform 100ms ease, background 200ms ease, box-shadow 200ms ease, opacity 200ms;
+    display:flex; align-items: center; justify-content: center; gap: 18px;
+    box-shadow:
+      0 1px 0 rgba(19,56,68,.6) inset,
+      0 -2px 0 rgba(0,0,0,.18) inset,
+      0 8px 22px -10px rgba(0,189,182,.55);
+  }
+  button.submit:hover:not(:disabled){
+    background: var(--blue-ink);
+    box-shadow:
+      0 1px 0 rgba(19,56,68,.7) inset,
+      0 -2px 0 rgba(0,0,0,.22) inset,
+      0 14px 28px -12px rgba(0,189,182,.6);
+  }
+  button.submit:focus-visible{ outline: 3px solid rgba(0,189,182,.4); outline-offset: 3px; }
+  button.submit:active{ transform: translateY(1px); }
+  button.submit:disabled{ background: var(--paper-3); color: var(--ink-4); cursor: not-allowed; box-shadow: none; }
+  button.submit .arrow{
+    display:inline-block; width: 30px; height: 1.5px; background: currentColor; position: relative;
+  }
+  button.submit .arrow::after{
+    content:""; position:absolute; right:-1px; top:50%;
+    width: 8px; height: 8px;
+    border-right: 1.5px solid currentColor; border-top: 1.5px solid currentColor;
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .submit-meta{
+    display:flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--serif); font-style: italic; font-size: 13px;
+    color: var(--ink-3);
+    padding: 0 4px;
+  }
+  .submit-meta b{
+    font-style: normal; font-family: var(--sans);
+    color: var(--ink-2); font-weight: 600;
+    font-size: 11.5px; letter-spacing:.16em; text-transform: uppercase;
+  }
+  .legal{
+    font-family: var(--serif); font-style: italic;
+    font-size: 13px; color: var(--ink-3);
+    text-align: center;
+    line-height: 1.65;
+    max-width: 50ch; margin: 6px auto 0;
+  }
+
+  /* Footer */
+  footer.colophon{
+    margin-top: 72px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--serif); font-style: italic;
+    font-size: 12.5px;
+    color: var(--ink-3);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+  footer.colophon .right{
+    font-family: var(--sans); font-style: normal;
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-4);
+  }
+
+  /* -------- Success screen -------- */
+  .success{ display: none; }
+  .success.show{ display: block; }
+  .form-view.hide{ display: none; }
+
+  .success .stamp{
+    display: inline-flex; align-items: center; gap: 10px;
+    margin: 0 0 26px;
+    border: 1.5px solid var(--blue);
+    color: var(--blue);
+    padding: 8px 16px;
+    border-radius: 2px;
+    font-family: var(--sans);
+    font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+    font-weight: 700;
+    transform: rotate(-1.5deg);
+    background: var(--blue-tint);
+  }
+  .success .stamp .tick{ width:14px; height:14px; }
+  .success h2{
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 40px;
+    line-height: 1.1;
+    letter-spacing: -.012em;
+    color: var(--blue-ink);
+    margin: 0 0 14px;
+    max-width: 20ch;
+    text-wrap: balance;
+  }
+  .success h2 em{ font-style: italic; color: var(--ink-2); }
+  .success .lead{
+    color: var(--ink-2); font-size: 16px; max-width: 56ch; margin: 0 0 30px;
+    line-height: 1.6;
+  }
+  .debrief{
+    padding: 28px 0 24px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    margin: 18px 0 28px;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 0 28px;
+  }
+  .debrief .head{
+    font-family: var(--serif); font-style: italic;
+    color: var(--gold);
+    font-size: 15px; font-weight: 500;
+  }
+  .debrief .head small{
+    display: block;
+    font-style: normal;
+    font-family: var(--sans);
+    font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--ink-4); font-weight: 600;
+    margin-top: 6px;
+  }
+  .debrief .body p{ margin: 0 0 12px; color: var(--ink-2); font-size: 15px; line-height: 1.65; }
+
+  /* -------- Mobile -------- */
+  @media (max-width: 640px){
+    .wrap{ padding: 36px 20px 96px; }
+    h1.title{ font-size: 30px; max-width: 18ch; }
+    .meta-row{ grid-template-columns: 1fr 1fr; gap: 14px 0; padding: 14px 0; }
+    .meta-row > div{ padding: 0 14px; }
+    .meta-row > div:nth-child(2){ border-right: 0; padding-right: 0; }
+    .meta-row > div:nth-child(3){
+      grid-column: 1 / -1;
+      padding-left: 0; border-top: 1px solid var(--rule-soft); padding-top: 12px;
+    }
+    .progress-meta{ font-size: 10.5px; padding: 9px 20px; }
+    .progress-meta .right .req{ display:none; }
+    .crest .dim{ display: none; }
+    .q{ grid-template-columns: 48px 1fr; gap: 0 18px; padding: 28px 0 30px; }
+    .q-num{ font-size: 32px; }
+    .q-text{ font-size: 16px; }
+    .likert-rule::before{ display: none; }
+    .likert-scale{
+      grid-template-columns: 1fr;
+      gap: 6px;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      background: var(--paper-2);
+      padding: 4px;
+    }
+    .likert-opt label{
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 14px;
+      min-height: 48px;
+      padding: 10px 14px;
+    }
+    .likert-opt label .num{ font-size: 16px; width: 18px; text-align: center; flex-shrink: 0; }
+    .likert-opt label .dot{ width: 18px; height: 18px; order: -1; }
+    .likert-opt label::after{
+      content: attr(data-anchor);
+      font-family: var(--serif); font-style: italic;
+      font-size: 13.5px; color: var(--ink-3); margin-left: 4px;
+    }
+    .likert-opt input:checked + label{ background: var(--blue-tint); }
+    .likert-opt input:checked + label .dot{ box-shadow: 0 0 0 3px rgba(0,189,182,.16); }
+    .likert-anchors{ display: none; }
+    button.submit{ padding: 22px 22px; font-size: 14.5px; }
+    .attest{ padding: 16px; gap: 12px; }
+    .attest input[type="checkbox"]{ top: 16px; left: 16px; }
+    .success h2{ font-size: 28px; }
+    .debrief{ grid-template-columns: 1fr; gap: 16px; }
+    details.consent > summary{ padding: 14px 16px; gap: 12px; }
+  }
+  @media (max-width: 360px){
+    .q-num{ font-size: 28px; }
+    .q{ grid-template-columns: 42px 1fr; gap: 0 14px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; animation: none !important; }
+    html{ scroll-behavior: auto; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <div id="survey-content">
-      <div class="header">
-        <span class="badge">Psychology Research</span>
-        <h1>{{ survey.title }}</h1>
-        {% if survey.config_json.get('description') %}
-          <p style="color:#555;margin-top:.5rem;line-height:1.6;">{{ survey.config_json.description }}</p>
-        {% endif %}
-        <div class="consent-box">
-          <strong>Informed Consent:</strong> Your participation is voluntary and anonymous. You may withdraw at any time. Responses are used for academic research purposes only. By submitting this survey you consent to participate.
-          {% if survey.config_json.get('estimated_minutes') %}
-            <br><strong>Estimated time:</strong> {{ survey.config_json.estimated_minutes }} minutes
-          {% endif %}
-        </div>
-      </div>
 
-      <form id="survey-form" novalidate>
-        {% set questions = survey.config_json.get('questions', []) %}
-        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-
-        {% for q in questions %}
-        <div class="question-card" id="q-card-{{ loop.index }}">
-          <div class="question-number">Question {{ loop.index }} of {{ questions|length }}{% if q.get('required') %} <span class="required-star">*</span>{% endif %}</div>
-          <div class="question-text">{{ q.text }}</div>
-
-          {% if q.type == 'likert' %}
-            <div class="likert-scale">
-              {% for val in range(1, (q.get('scale', 5) + 1)) %}
-              <div class="likert-option">
-                <input type="radio" name="q_{{ loop.index0 }}" id="q{{ loop.index0 }}_{{ val }}" value="{{ val }}" {% if q.get('required') %}required{% endif %}>
-                <label for="q{{ loop.index0 }}_{{ val }}">
-                  <span class="likert-value">{{ val }}</span>
-                  {% if val == 1 %}{{ q.get('anchor_low', 'Strongly Disagree') }}
-                  {% elif val == q.get('scale', 5) %}{{ q.get('anchor_high', 'Strongly Agree') }}
-                  {% endif %}
-                </label>
-              </div>
-              {% endfor %}
-            </div>
-          {% elif q.type == 'text' %}
-            <textarea class="text-input" name="q_{{ loop.index0 }}" placeholder="{{ q.get('placeholder', 'Your answer...') }}" rows="3" {% if q.get('required') %}required{% endif %}></textarea>
-          {% elif q.type == 'select' %}
-            <select class="select-input" name="q_{{ loop.index0 }}" {% if q.get('required') %}required{% endif %}>
-              <option value="">— Select an option —</option>
-              {% for opt in q.get('options', []) %}
-              <option value="{{ opt }}">{{ opt }}</option>
-              {% endfor %}
-            </select>
-          {% elif q.type == 'number' %}
-            <input type="number" class="text-input" name="q_{{ loop.index0 }}" placeholder="{{ q.get('placeholder', 'Enter a number') }}" min="{{ q.get('min', '') }}" max="{{ q.get('max', '') }}" {% if q.get('required') %}required{% endif %}>
-          {% endif %}
-          <div class="error-msg" id="err-{{ loop.index0 }}">This question is required.</div>
-        </div>
-        {% endfor %}
-
-        <button type="submit" class="submit-btn" id="submit-btn">Submit Responses</button>
-      </form>
+  <!-- Sticky progress bar -->
+  <div class="progress">
+    <div class="progress-track" aria-hidden="true">
+      <i id="progressBar"></i>
     </div>
-
-    <div id="success-screen">
-      <div class="checkmark">✅</div>
-      <h2>Thank you!</h2>
-      <p>Your responses have been recorded. You may close this window.</p>
-      {% if survey.config_json.get('debrief_text') %}
-        <div class="consent-box" style="margin-top:1.5rem;text-align:left;">
-          <strong>Debriefing:</strong> {{ survey.config_json.debrief_text }}
-        </div>
-      {% endif %}
+    <div class="progress-meta">
+      <span class="left">
+        <span>Psychology Research</span>
+      </span>
+      <span class="right">
+        <b id="answeredCount">0</b> of <b id="totalCount">0</b>
+        <span class="req">required</span>
+      </span>
     </div>
   </div>
 
-  <script>
-    const TOKEN = "{{ token }}";
-    const form = document.getElementById('survey-form');
-    const progressFill = document.getElementById('progress-fill');
-    const questions = document.querySelectorAll('.question-card');
+  <main class="wrap">
 
-    function updateProgress() {
-      const inputs = form.querySelectorAll('input:checked, textarea, select');
-      let answered = 0;
-      form.querySelectorAll('[name]').forEach(el => {
-        if (el.type === 'radio') { if (form.querySelector(`input[name="${el.name}"]:checked`)) answered++; }
-        else if (el.value.trim()) answered++;
-      });
-      const uniqueNames = new Set([...form.querySelectorAll('[name]')].map(e => e.name));
-      const pct = uniqueNames.size ? Math.round((answered / uniqueNames.size) * 100) : 0;
-      progressFill.style.width = pct + '%';
-    }
+    <!-- Masthead -->
+    <header class="masthead">
+      <div class="crest">
+        <div class="seal" aria-hidden="true">Ψ</div>
+        <span>Psychology Research Survey</span>
+        {% if survey.config_json.get('institution') %}
+          <span class="pipe" aria-hidden="true"></span>
+          <span class="dim">{{ survey.config_json.institution }}</span>
+        {% endif %}
+      </div>
 
-    form.addEventListener('change', updateProgress);
-    form.addEventListener('input', updateProgress);
+      <h1 class="title">{{ survey.title }}</h1>
 
-    form.addEventListener('submit', async (e) => {
+      {% if survey.config_json.get('description') %}
+        <p class="subtitle">{{ survey.config_json.description }}</p>
+      {% else %}
+        <p class="subtitle">A research questionnaire. Your answers are recorded <em>anonymously</em> and analyzed only in aggregate.</p>
+      {% endif %}
+
+      <div class="meta-row">
+        {% if survey.config_json.get('investigator') %}
+          <div>
+            <span class="k">Principal Investigator</span>
+            <span class="v">{{ survey.config_json.investigator }}</span>
+          </div>
+        {% endif %}
+        {% if survey.config_json.get('estimated_minutes') %}
+          <div>
+            <span class="k">Est. completion</span>
+            <span class="v">{{ survey.config_json.estimated_minutes }} minutes</span>
+          </div>
+        {% endif %}
+        {% if survey.config_json.get('irb_protocol') %}
+          <div>
+            <span class="k">IRB Protocol</span>
+            <span class="v">{{ survey.config_json.irb_protocol }}</span>
+          </div>
+        {% else %}
+          <div>
+            <span class="k">Data handling</span>
+            <span class="v">Anonymous</span>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Collapsible informed consent -->
+      <details class="consent" id="consentDetails">
+        <summary>
+          <span class="ico" aria-hidden="true">IRB</span>
+          <span class="lbl">
+            <span>Informed consent &amp; participant rights</span>
+            <small>You will be asked to confirm consent before submitting.</small>
+          </span>
+          <span class="chev" aria-hidden="true">
+            <span class="open-lbl">Expand</span>
+            <span class="close-lbl">Collapse</span>
+            <svg width="11" height="7" viewBox="0 0 11 7" fill="none"><path d="M1 1l4.5 4.5L10 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </summary>
+        <div class="body">
+          <p>You are invited to participate in a research survey. Participation is voluntary, and you may close this page at any time without penalty.</p>
+          <h4>What you will do</h4>
+          <p>Answer a series of questions that may include rating scales, open-ended responses, and multiple-choice items. There are no right or wrong answers — please respond honestly.</p>
+          <h4>Confidentiality</h4>
+          <ul>
+            <li>No name, email address, or identifying information is collected.</li>
+            <li>Responses are stored on secure, encrypted servers.</li>
+            <li>Only aggregate data will appear in any publication or report.</li>
+          </ul>
+          <h4>Your rights</h4>
+          <p>You may withdraw at any time before submission by closing this page. Questions about your rights may be directed to the institutional research ethics board.</p>
+        </div>
+      </details>
+    </header>
+
+    <!-- FORM VIEW -->
+    <section class="form-view" id="formView">
+      <form id="surveyForm" novalidate>
+        {% set questions = survey.config_json.get('questions', []) %}
+        <div class="questions">
+
+          {% for q in questions %}
+          {% set q_idx = loop.index0 %}
+          {% set q_num = loop.index %}
+          {% set is_required = q.get('required', false) %}
+
+          <fieldset class="q" data-required="{{ 'true' if is_required else 'false' }}">
+            <div class="q-num" aria-hidden="true">
+              {{ '%02d' % q_num }}<sup>.</sup>{% if is_required %}<span class="req" title="Required">*</span>{% endif %}
+            </div>
+            <div class="q-body">
+              <legend class="q-text">
+                {{ q.text }}{% if not is_required %}<span class="q-tag">— optional</span>{% endif %}
+              </legend>
+
+              {% if q.type == 'likert' %}
+                {% set scale = q.get('scale', 5) %}
+                <div class="likert" style="--steps:{{ scale }};">
+                  <div class="likert-rule">
+                    <div class="likert-scale" role="radiogroup" aria-label="Question {{ q_num }}, scale of 1 to {{ scale }}">
+                      {% for val in range(1, scale + 1) %}
+                      {% set mid = (scale + 1) // 2 %}
+                      <div class="likert-opt">
+                        <input type="radio" name="q_{{ q_idx }}" id="q{{ q_idx }}_{{ val }}" value="{{ val }}"
+                          {% if is_required %}required{% endif %}>
+                        <label for="q{{ q_idx }}_{{ val }}"
+                          data-anchor="{% if val == 1 %}{{ q.get('anchor_low', '') }}{% elif val == scale %}{{ q.get('anchor_high', '') }}{% elif val == mid %}neutral{% endif %}">
+                          <span class="dot" aria-hidden="true"></span>
+                          <span class="num">{{ val }}</span>
+                        </label>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <div class="likert-anchors" aria-hidden="true">
+                    <span class="a-left">{{ q.get('anchor_low', '') }}</span>
+                    <span class="a-mid"></span>
+                    <span class="a-right">{{ q.get('anchor_high', '') }}</span>
+                  </div>
+                </div>
+
+              {% elif q.type == 'text' %}
+                <div class="input-frame">
+                  <textarea name="q_{{ q_idx }}"
+                    placeholder="{{ q.get('placeholder', 'Your answer…') }}"
+                    maxlength="1000"
+                    id="q{{ q_idx }}_text"
+                    {% if is_required %}required{% endif %}></textarea>
+                </div>
+                <div class="char-count">
+                  <span id="q{{ q_idx }}_count">0</span> / 1000
+                </div>
+
+              {% elif q.type == 'select' %}
+                <div class="select-wrap">
+                  <select name="q_{{ q_idx }}" {% if is_required %}required{% endif %}>
+                    <option value="" disabled selected>Select an option…</option>
+                    {% for opt in q.get('options', []) %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+              {% elif q.type == 'number' %}
+                <div class="input-frame">
+                  <input type="number" name="q_{{ q_idx }}"
+                    placeholder="{{ q.get('placeholder', 'Enter a number') }}"
+                    {% if q.get('min') is not none %}min="{{ q.min }}"{% endif %}
+                    {% if q.get('max') is not none %}max="{{ q.max }}"{% endif %}
+                    {% if is_required %}required{% endif %}>
+                </div>
+              {% endif %}
+
+              <div class="q-error" id="err_{{ q_idx }}" role="alert">This question is required.</div>
+            </div>
+          </fieldset>
+          {% endfor %}
+
+        </div><!-- .questions -->
+
+        <!-- Submission area -->
+        <div class="actions">
+          <span class="actions-kicker">Submission</span>
+
+          <div class="attest" id="attest">
+            <span class="corner" aria-hidden="true">Required</span>
+            <input type="checkbox" id="consentChk" name="consent" />
+            <span class="box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <label for="consentChk">
+              <span class="head">Informed consent <span class="req-mark" aria-hidden="true">*</span></span>
+              I confirm that I have read the <a href="#consentDetails" data-flash-consent>informed consent</a> above,
+              I am <em>18 years of age or older</em>, and I voluntarily agree to participate in this research survey.
+              <span class="signed" aria-hidden="true">
+                <span class="x">✓</span>
+                <span>Consent attested · <span id="attestStamp">—</span></span>
+              </span>
+            </label>
+          </div>
+
+          <p class="submit-reason" id="submitReason" role="status">
+            <span class="marker" aria-hidden="true">↑</span>
+            <span id="submitReasonText">Please check the consent attestation above to enable submission.</span>
+          </p>
+
+          <button type="submit" class="submit" id="submitBtn" disabled>
+            Record my responses
+            <span class="arrow" aria-hidden="true"></span>
+          </button>
+
+          <div class="submit-meta">
+            <span><b>Anonymous</b> · No identifying data is stored.</span>
+          </div>
+          <p class="legal">Once submitted, responses cannot be retracted because no identifier links them to you.</p>
+        </div>
+
+      </form>
+
+      <footer class="colophon">
+        <span>Psychology Research Survey</span>
+        <span class="right">Psychology Dictionary · AI Tutor</span>
+      </footer>
+    </section>
+
+    <!-- SUCCESS VIEW -->
+    <section class="success" id="successView" aria-live="polite">
+      <div class="stamp">
+        <svg class="tick" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Response recorded
+      </div>
+      <h2>Thank you for <em>participating.</em></h2>
+      <p class="lead">Your responses have been added to the research dataset. No identifying information was stored. You may now safely close this page.</p>
+
+      {% if survey.config_json.get('debrief_text') %}
+      <div class="debrief">
+        <div class="head">Debriefing<small>Study purpose</small></div>
+        <div class="body">
+          <p>{{ survey.config_json.debrief_text }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      <footer class="colophon">
+        <span>Psychology Research Survey · Thank you</span>
+        <span class="right" id="responseId">Response recorded</span>
+      </footer>
+    </section>
+
+  </main>
+
+<script>
+(function(){
+  const TOKEN = "{{ token }}";
+  const form = document.getElementById('surveyForm');
+  const progressBar = document.getElementById('progressBar');
+  const answeredEl = document.getElementById('answeredCount');
+  const totalEl = document.getElementById('totalCount');
+  const submitBtn = document.getElementById('submitBtn');
+  const submitReason = document.getElementById('submitReason');
+  const submitReasonText = document.getElementById('submitReasonText');
+  const formView = document.getElementById('formView');
+  const successView = document.getElementById('successView');
+  const consentDetails = document.getElementById('consentDetails');
+  const consentChk = document.getElementById('consentChk');
+  const attest = document.getElementById('attest');
+  const attestStamp = document.getElementById('attestStamp');
+
+  const required = Array.from(form.querySelectorAll('fieldset.q[data-required="true"]'));
+  totalEl.textContent = required.length;
+
+  // Wire up char counters for textareas
+  form.querySelectorAll('textarea[id]').forEach(ta => {
+    const counterId = ta.id.replace('_text', '_count');
+    const counter = document.getElementById(counterId);
+    if (counter) ta.addEventListener('input', () => { counter.textContent = ta.value.length; });
+  });
+
+  // Flash consent panel when link is clicked
+  document.querySelectorAll('[data-flash-consent]').forEach(a => {
+    a.addEventListener('click', (e) => {
       e.preventDefault();
-      const btn = document.getElementById('submit-btn');
-      btn.disabled = true;
-      btn.textContent = 'Submitting...';
-
-      const answers = {};
-      const formData = new FormData(form);
-      for (const [key, value] of formData.entries()) answers[key] = value;
-      form.querySelectorAll('input[type="radio"]:checked').forEach(el => answers[el.name] = el.value);
-
-      try {
-        const resp = await fetch(`/s/${TOKEN}/respond`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ answers }),
-        });
-        if (resp.ok) {
-          document.getElementById('survey-content').style.display = 'none';
-          document.getElementById('success-screen').style.display = 'block';
-        } else {
-          const data = await resp.json();
-          alert(data.error || 'Submission failed. Please try again.');
-          btn.disabled = false;
-          btn.textContent = 'Submit Responses';
-        }
-      } catch {
-        alert('Network error. Please check your connection and try again.');
-        btn.disabled = false;
-        btn.textContent = 'Submit Responses';
-      }
+      if (!consentDetails.open) consentDetails.open = true;
+      consentDetails.classList.remove('flash');
+      void consentDetails.offsetWidth;
+      consentDetails.classList.add('flash');
+      consentDetails.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => consentDetails.classList.remove('flash'), 1500);
     });
-  </script>
+  });
+
+  consentDetails.addEventListener('toggle', () => {
+    if (consentDetails.open) consentDetails.classList.add('acknowledged');
+  });
+
+  function isFieldsetAnswered(fs) {
+    const radios = fs.querySelectorAll('input[type="radio"]');
+    const select = fs.querySelector('select');
+    const text   = fs.querySelector('input[type="text"], input[type="number"], textarea');
+    if (radios.length) return Array.from(radios).some(r => r.checked);
+    if (select) return !!select.value;
+    if (text)   return text.value.trim().length > 0;
+    return false;
+  }
+
+  function update() {
+    let done = 0;
+    required.forEach(fs => { if (isFieldsetAnswered(fs)) done++; });
+    answeredEl.textContent = done;
+    const pct = required.length ? (done / required.length) * 100 : 0;
+    progressBar.style.width = pct + '%';
+
+    const formComplete = done >= required.length;
+    const allowSubmit = formComplete && consentChk.checked;
+    submitBtn.disabled = !allowSubmit;
+
+    if (!allowSubmit) {
+      if (!formComplete) {
+        const rem = required.length - done;
+        submitReasonText.textContent = 'Please answer the remaining ' + rem + ' required question' + (rem === 1 ? '' : 's') + ' to enable submission.';
+      } else {
+        submitReasonText.textContent = 'Please check the consent attestation above to enable submission.';
+      }
+      submitReason.classList.add('show');
+    } else {
+      submitReason.classList.remove('show');
+    }
+  }
+
+  consentChk.addEventListener('change', () => {
+    attest.classList.toggle('checked', consentChk.checked);
+    if (consentChk.checked) {
+      const now = new Date();
+      attestStamp.textContent = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: '2-digit' });
+    } else {
+      attestStamp.textContent = '—';
+    }
+    update();
+  });
+
+  // Flash attestation if submit clicked while disabled and only consent is missing
+  submitBtn.addEventListener('click', (e) => {
+    if (!submitBtn.disabled) return;
+    e.preventDefault();
+    let done = 0;
+    required.forEach(fs => { if (isFieldsetAnswered(fs)) done++; });
+    if (done >= required.length && !consentChk.checked) {
+      attest.classList.remove('flash');
+      void attest.offsetWidth;
+      attest.classList.add('flash');
+      attest.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => attest.classList.remove('flash'), 1500);
+    }
+  });
+
+  form.addEventListener('change', update);
+  form.addEventListener('input', update);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (submitBtn.disabled) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    progressBar.style.width = '100%';
+
+    // Collect all form field values
+    const answers = {};
+    const data = new FormData(form);
+    for (const [key, value] of data.entries()) {
+      if (key !== 'consent') answers[key] = value;
+    }
+    // Ensure radio values are captured (FormData may not capture unchecked)
+    form.querySelectorAll('input[type="radio"]:checked').forEach(el => {
+      answers[el.name] = el.value;
+    });
+
+    try {
+      const resp = await fetch('/s/' + TOKEN + '/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answers }),
+      });
+      if (resp.ok) {
+        formView.classList.add('hide');
+        successView.classList.add('show');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        const body = await resp.json().catch(() => ({}));
+        alert((body.error || body.detail) || 'Submission failed. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Record my responses <span class="arrow" aria-hidden="true"></span>';
+        update();
+      }
+    } catch {
+      alert('Network error. Please check your connection and try again.');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Record my responses <span class="arrow" aria-hidden="true"></span>';
+      update();
+    }
+  });
+
+  update();
+})();
+</script>
 </body>
 </html>

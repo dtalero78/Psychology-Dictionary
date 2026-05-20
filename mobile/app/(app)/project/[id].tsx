@@ -76,7 +76,17 @@ export default function ProjectScreen() {
           <Text style={styles.backText}>‹ Back</Text>
         </TouchableOpacity>
         <Text style={styles.projectTitle} numberOfLines={1}>{project?.title ?? '…'}</Text>
-        <View style={{ width: 60 }} />
+        <View style={styles.headerActions}>
+          <TouchableOpacity onPress={() => router.push(`/(app)/analysis/${id}`)}>
+            <Text style={styles.actionBtnText}>Stats</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push(`/(app)/survey/index?projectId=${id}`)}>
+            <Text style={styles.actionBtnText}>Surveys</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push(`/(app)/document/${id}`)}>
+            <Text style={styles.actionBtnText}>Report</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.stepNav} contentContainerStyle={styles.stepNavContent}>
@@ -129,12 +139,14 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f7' },
   headerRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: '#e0e0e0', backgroundColor: '#fff' },
   backBtn: { width: 60 },
-  backText: { color: '#0070c9', fontSize: 17 },
+  backText: { color: '#00BDB6', fontSize: 17 },
+  headerActions: { flexDirection: 'row', gap: 12, alignItems: 'center' },
+  actionBtnText: { color: '#00BDB6', fontSize: 13, fontWeight: '700' },
   projectTitle: { flex: 1, textAlign: 'center', fontSize: 16, fontWeight: '600', color: '#1d1d1f' },
   stepNav: { backgroundColor: '#fff', borderBottomWidth: 0.5, borderBottomColor: '#e0e0e0' },
   stepNavContent: { paddingHorizontal: 12, paddingVertical: 10, gap: 8 },
   stepPill: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#f0f0f0', alignItems: 'center', justifyContent: 'center' },
-  stepPillActive: { backgroundColor: '#0070c9' },
+  stepPillActive: { backgroundColor: '#004AAE' },
   stepPillDone: { backgroundColor: '#e8f5e9' },
   stepPillText: { fontSize: 14, fontWeight: '700', color: '#666' },
   stepPillTextActive: { color: '#fff' },
@@ -142,12 +154,12 @@ const styles = StyleSheet.create({
   stepLabel: { fontSize: 13, color: '#888', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
   stepTitle: { fontSize: 22, fontWeight: '700', color: '#1d1d1f', marginBottom: 16 },
   textInput: { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: '#e0e0e0', padding: 14, fontSize: 15, lineHeight: 22, minHeight: 120, marginBottom: 12 },
-  runBtn: { backgroundColor: '#0070c9', borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 20 },
+  runBtn: { backgroundColor: '#004AAE', borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 20 },
   runBtnDisabled: { backgroundColor: '#aaa' },
   runBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  responseCard: { backgroundColor: '#fff', borderRadius: 14, padding: 16, borderLeftWidth: 3, borderLeftColor: '#0070c9' },
-  responseLabel: { fontSize: 12, color: '#0070c9', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
+  responseCard: { backgroundColor: '#fff', borderRadius: 14, padding: 16, borderLeftWidth: 3, borderLeftColor: '#004AAE' },
+  responseLabel: { fontSize: 12, color: '#004AAE', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
   responseText: { fontSize: 15, color: '#1d1d1f', lineHeight: 24 },
-  nextBtn: { marginTop: 16, backgroundColor: '#e8f4fd', borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
-  nextBtnText: { color: '#0070c9', fontSize: 15, fontWeight: '700' },
+  nextBtn: { marginTop: 16, backgroundColor: '#dce6f5', borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
+  nextBtnText: { color: '#004AAE', fontSize: 15, fontWeight: '700' },
 });

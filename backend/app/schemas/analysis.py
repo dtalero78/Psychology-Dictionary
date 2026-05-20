@@ -18,5 +18,6 @@ class AnalysisResult(BaseModel):
     ci_95: list[float] | None
     interpretation_apa: str
     result_json: dict[str, Any]
+    created_at: str | None = None
 
     model_config = {"from_attributes": True}

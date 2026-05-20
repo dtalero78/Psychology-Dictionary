@@ -1,9 +1,18 @@
-import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+import { Stack, Redirect } from 'expo-router';
+import Purchases from 'react-native-purchases';
 import { useAuth } from '../../src/context/AuthContext';
-import { Redirect } from 'expo-router';
+
+const RC_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY ?? '';
 
 export default function AppLayout() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  useEffect(() => {
+    if (user?.id && RC_API_KEY) {
+      Purchases.configure({ apiKey: RC_API_KEY, appUserID: user.id });
+    }
+  }, [user?.id]);
 
   if (!isLoading && !isAuthenticated) {
     return <Redirect href="/(auth)/login" />;
