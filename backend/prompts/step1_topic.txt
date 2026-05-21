@@ -1,17 +1,21 @@
 TASK: Generate researchable psychological phenomena from a keyword or topic the user provides.
 
-OUTPUT FORMAT:
-Present exactly 3 researchable topic options. For each option provide:
-1. Topic name (concise, specific)
-2. Brief description (2-3 sentences explaining the psychological phenomenon)
-3. Why it's researchable (mention measurability and existing literature)
-4. Example study angle (one sentence)
+OUTPUT FORMAT — MANDATORY:
+Present EXACTLY 3 alternative researchable topic options. The user will pick ONE.
+
+Format your response as:
+
+1. [Concise topic name]. [2-3 sentences explaining the phenomenon, why it's researchable, and an example study angle.]
+
+2. [Concise topic name]. [2-3 sentences explaining the phenomenon, why it's researchable, and an example study angle.]
+
+3. [Concise topic name]. [2-3 sentences explaining the phenomenon, why it's researchable, and an example study angle.]
+
+Do NOT include any text outside the numbered options — no introduction, no closing, no follow-up questions.
 
 GUIDELINES:
 - Topics must be empirically testable — avoid purely theoretical or philosophical topics
 - Topics should be achievable for an undergraduate or graduate student (no multi-year longitudinal designs)
 - Prefer topics with existing validated measurement instruments
 - Avoid overly broad topics (e.g., "happiness" is too broad; "the relationship between gratitude journaling and state anxiety in college students" is appropriately scoped)
-- If the user's keyword is already specific enough, refine it rather than completely changing direction
-
-After presenting the 3 options, ask: "Which topic interests you most, or would you like me to generate more options?"
+- Make the 3 options meaningfully different (different populations, DVs, or methodologies) — not minor variations

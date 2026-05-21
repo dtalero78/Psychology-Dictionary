@@ -1,34 +1,25 @@
-TASK: Identify threats to internal and external validity and write the Limitations section of the APA paper.
+TASK: Propose 3 alternative limitation framings — each focuses on a different threat category to address in the Discussion section.
 
-OUTPUT FORMAT:
-1. Threats to Internal Validity (list each threat, explain how it applies to this study, and suggest any mitigations used)
-2. Threats to External Validity (generalizability concerns)
-3. Methodological Limitations (specific to the instruments, design, or analysis chosen)
-4. Future Research Directions (2-3 suggestions that address the identified limitations)
-5. APA-formatted Limitations paragraph ready to insert into Discussion section
+OUTPUT FORMAT — MANDATORY:
+Present EXACTLY 3 alternative limitation framings. The user will pick ONE to write up as the primary limitations focus for the paper.
 
-INTERNAL VALIDITY THREATS (evaluate each for this specific study):
-- Selection bias: Are groups comparable before the study?
-- History: Could external events during the study period affect results?
-- Maturation: Could natural changes in participants explain results?
-- Testing effects: Does repeated measurement change responses?
-- Instrumentation: Could changes in measurement affect results?
-- Attrition/mortality: Could dropout patterns bias results?
-- Regression to the mean: Were extreme scorers selected?
-- Demand characteristics: Could participants guess the study's purpose?
-- Experimenter bias: Could researcher expectations influence results?
-- Common method bias (correlational only): Self-report inflation of relationships?
+Format your response as:
 
-EXTERNAL VALIDITY THREATS:
-- Population validity: Is the sample representative of the target population?
-- Ecological validity: Do lab conditions reflect real-world settings?
-- Temporal validity: Are findings time-limited?
+1. Internal validity focus: [Top 2-3 internal validity threats specific to this study, e.g., selection bias, demand characteristics, attrition]. [2-3 sentences explaining how each applies and how the paper should address them.] APA-ready paragraph: "[draft 2-3 sentences for the Limitations section, with hedged language and (Author, Year) placeholders]".
 
-GUIDELINES FOR WRITING THE LIMITATIONS PARAGRAPH:
-- Acknowledge limitations honestly but without undermining the study's contribution
+2. External validity focus: [Top 2-3 generalizability concerns, e.g., population, ecological, temporal validity]. [2-3 sentences explaining how each applies.] APA-ready paragraph: "[draft 2-3 sentences for the Limitations section]".
+
+3. Methodological / measurement focus: [Top 2-3 limitations specific to instruments, design choices, or analysis assumptions]. [2-3 sentences explaining each.] APA-ready paragraph: "[draft 2-3 sentences for the Limitations section]".
+
+Do NOT include any text outside the numbered options.
+
+GUIDELINES:
+- Each option's APA-ready paragraph must be drop-in usable in a Discussion section
 - Use hedged language: "may have," "could potentially," "it is possible that"
-- Pair each limitation with a mitigation or why it's unavoidable
-- Write in APA style, past or present tense, 2-4 sentences per major limitation
-- End the Limitations section with Future Research Directions
+- Pair each limitation with a mitigation or a note that the limitation is unavoidable given the design
+- 2-3 sentences per limitation, max ~80 words per APA paragraph
 
-Output the complete Limitations section (approximately 300-500 words) in APA format.
+THREATS TO PULL FROM:
+INTERNAL VALIDITY: selection bias, history, maturation, testing effects, instrumentation, attrition, regression to the mean, demand characteristics, experimenter bias, common method bias.
+EXTERNAL VALIDITY: population validity, ecological validity, temporal validity.
+METHODOLOGICAL: instrument reliability ceiling, design constraints (cross-sectional cannot test causation, etc.), analysis assumption violations, statistical power.

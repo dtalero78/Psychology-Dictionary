@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, Text, Vi
 import { useLocalSearchParams, router } from 'expo-router';
 import { api, unwrap } from '../../../src/api/client';
 import type { Survey } from '../../../src/types';
-import { Body, Card, H2, Muted, Pill, Screen } from '../../../components/ui';
+import { Body, Button, Card, H2, Muted, Pill, Screen } from '../../../components/ui';
 
 export default function SurveyListScreen() {
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
@@ -82,13 +82,13 @@ export default function SurveyListScreen() {
       )}
 
       <View className="absolute bottom-6 left-5 right-5">
-        <Pressable
+        <Button
           onPress={() => router.push(`/(app)/survey/create?projectId=${projectId}`)}
-          className="bg-navy-deep rounded-lg py-4 items-center active:bg-navy"
+          variant="primary"
           style={{ shadowColor: '#1a2b48', shadowOpacity: 0.3, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 8 }}
         >
-          <Body className="text-white font-sans-semibold text-body-lg">+ New Survey</Body>
-        </Pressable>
+          + New Survey
+        </Button>
       </View>
     </Screen>
   );

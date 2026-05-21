@@ -38,12 +38,13 @@ const C = {
   danger: '#ba1a1a',
 };
 
-const F = {
-  serif: 'SourceSerif4_600SemiBold',
-  serifBold: 'SourceSerif4_700Bold',
-  sans: 'Inter_400Regular',
-  sansMedium: 'Inter_500Medium',
-  sansSemibold: 'Inter_600SemiBold',
+// Using iOS system font (San Francisco). Omitting fontFamily lets RN use the
+// platform default; control weight via fontWeight. On Android this maps to Roboto.
+const W = {
+  regular: '400' as const,
+  medium: '500' as const,
+  semibold: '600' as const,
+  bold: '700' as const,
 };
 
 type Variant = 'primary' | 'ghost' | 'success' | 'gold';
@@ -216,7 +217,7 @@ export function Divider({ label, style, className }: WithClass<{ label?: string;
 }
 
 // Re-export theme tokens for screens that need direct access
-export const theme = { C, F };
+export const theme = { C, W };
 
 const pillVariants = {
   navy: { bg: { backgroundColor: C.navy }, text: { color: '#fff' } },
@@ -252,7 +253,7 @@ const s = StyleSheet.create({
     padding: 16,
   },
   tutorLabel: {
-    fontFamily: F.sansSemibold,
+    fontWeight: W.semibold,
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.6,
@@ -268,7 +269,7 @@ const s = StyleSheet.create({
     borderRadius: 9999,
   },
   pillText: {
-    fontFamily: F.sansSemibold,
+    fontWeight: W.semibold,
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.6,
@@ -276,38 +277,40 @@ const s = StyleSheet.create({
   },
 
   h1: {
-    fontFamily: F.serifBold,
+    fontWeight: W.bold,
     fontSize: 34,
     lineHeight: 42,
     letterSpacing: -0.68,
     color: C.ink,
   },
   h2: {
-    fontFamily: F.serif,
+    fontWeight: W.semibold,
     fontSize: 28,
     lineHeight: 34,
+    letterSpacing: -0.4,
     color: C.ink,
   },
   h3: {
-    fontFamily: F.serif,
+    fontWeight: W.semibold,
     fontSize: 20,
     lineHeight: 28,
+    letterSpacing: -0.2,
     color: C.ink,
   },
   body: {
-    fontFamily: F.sans,
+    fontWeight: W.regular,
     fontSize: 15,
     lineHeight: 22,
     color: C.ink,
   },
   muted: {
-    fontFamily: F.sans,
+    fontWeight: W.regular,
     fontSize: 15,
     lineHeight: 22,
     color: C.inkMuted,
   },
   labelCaps: {
-    fontFamily: F.sansSemibold,
+    fontWeight: W.semibold,
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.6,
@@ -324,7 +327,7 @@ const s = StyleSheet.create({
   },
   btnDisabled: { opacity: 0.5 },
   btnLabel: {
-    fontFamily: F.sansSemibold,
+    fontWeight: W.semibold,
     fontSize: 17,
     lineHeight: 26,
   },
@@ -336,7 +339,7 @@ const s = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    fontFamily: F.sans,
+    fontWeight: W.regular,
     fontSize: 17,
     lineHeight: 26,
     color: C.ink,
@@ -349,7 +352,7 @@ const s = StyleSheet.create({
   stepPending: { backgroundColor: C.surfaceHigh },
 
   dividerLabel: {
-    fontFamily: F.sans,
+    fontWeight: W.regular,
     fontSize: 13,
     lineHeight: 18,
     color: C.inkMuted,

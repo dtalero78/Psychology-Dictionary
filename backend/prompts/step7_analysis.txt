@@ -1,34 +1,28 @@
-TASK: Recommend the appropriate statistical test(s) for this study and prepare the analysis plan.
+TASK: Recommend 3 alternative statistical analysis approaches for the study.
 
-OUTPUT FORMAT:
-1. Primary statistical test recommended
-2. Justification (why this test fits the data structure and research question)
-3. Assumptions to verify before running the test
-4. Data format required (describe exactly how the data should be structured for analysis)
-5. Effect size to report
-6. How to interpret results for this study
+OUTPUT FORMAT — MANDATORY:
+Present EXACTLY 3 alternative analysis approaches. The user will pick ONE.
 
-STATISTICAL TEST SELECTION DECISION TREE:
+Format your response as:
 
-Comparing groups on a continuous DV:
-- 2 independent groups → Independent samples t-test → Cohen's d
-- 2 paired/matched groups → Paired samples t-test → Cohen's d
-- 3+ independent groups → One-way ANOVA → η²
-- 3+ groups with covariate → ANCOVA → partial η²
+1. [Test name — e.g., "Independent samples t-test"]. [1-2 sentences explaining what this tests and why it fits the data.] Assumptions: [list key assumptions]. Effect size: [d, η², r, etc.]. Data needed: [brief description of data structure required].
 
-Examining relationships:
-- Two continuous variables → Pearson r (if normal) or Spearman ρ (if non-normal/ordinal)
-- One DV, multiple continuous IVs → Multiple linear regression → R²
-- Categorical variables → Chi-square test of independence → Cramér's V
+2. [Test name — alternative, e.g., "Mann-Whitney U (non-parametric)"]. [1-2 sentences explaining what this tests and when to prefer it.] Assumptions: [list key assumptions]. Effect size: [r, rank-biserial]. Data needed: [data structure].
 
-ASSUMPTIONS TO VERIFY:
-- t-test/ANOVA: normality (Shapiro-Wilk), homogeneity of variance (Levene's test), independence
-- Correlation: linearity, no outliers, bivariate normality
-- Regression: linearity, independence, homoscedasticity, normality of residuals, no multicollinearity (VIF < 5)
-- Chi-square: expected cell frequencies ≥ 5, independence
+3. [Test name — third alternative]. [1-2 sentences.] Assumptions: [list]. Effect size: [measure]. Data needed: [structure].
 
-ANALYSIS PLAN TEMPLATE:
-"A [test name] will be conducted to examine [research question]. The [IV/predictor] will be [description], and the [DV/outcome] will be [description]. Statistical significance will be set at α = .05. [Effect size measure] will be reported as an index of practical significance."
+Do NOT include any text outside the numbered options.
 
-REQUIRED OUTPUT FORMAT FOR DATA:
-Describe exactly what data arrays/columns the researcher needs to collect for this analysis to run. This will be used to set up the data collection instrument.
+GUIDELINES:
+- The 3 options should represent meaningful alternatives: parametric vs non-parametric, OR different test types, OR different effect size choices
+- All 3 must be applicable to the study's data structure
+- Statistical significance threshold: α = .05
+
+TEST FAMILIES TO CHOOSE FROM:
+- Comparing groups on continuous DV: t-test (Cohen's d), ANOVA (η²), ANCOVA (partial η²), Mann-Whitney U (r), Kruskal-Wallis (η²H)
+- Examining relationships: Pearson r, Spearman ρ, Multiple regression (R²)
+- Categorical: Chi-square (Cramér's V), Fisher's exact (OR)
+- Bayesian alternatives: Bayes factor t-test, Bayesian correlation
+
+EXAMPLE OPTION:
+1. Independent samples t-test. Tests whether mean GAD-7 scores differ between the mindfulness training group and the control group. Assumptions: normality of DV within groups (Shapiro-Wilk), homogeneity of variance (Levene's), independence of observations. Effect size: Cohen's d. Data needed: two arrays of numerical scores, one per group.

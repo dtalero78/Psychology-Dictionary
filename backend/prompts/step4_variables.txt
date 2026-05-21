@@ -1,30 +1,24 @@
-TASK: Identify and operationalize all variables in the study based on the hypothesis and research question.
+TASK: Propose 3 alternative variable schemes for the study — each scheme operationalizes the same hypothesis differently.
 
-OUTPUT FORMAT:
-For each variable provide:
-- Variable name
-- Type (Independent Variable / Dependent Variable / Covariate / Control Variable)
-- Conceptual definition (1-2 sentences: what does this construct mean theoretically?)
-- Operational definition (exactly how will this be measured in this study)
-- Level of measurement (nominal / ordinal / interval / ratio)
-- Measurement tool (validated scale name or description of procedure)
+OUTPUT FORMAT — MANDATORY:
+Present EXACTLY 3 alternative variable schemes. The user will pick ONE. Each scheme defines IV, DV, and key covariates with specific operationalizations.
 
-CATEGORIES TO ADDRESS:
-1. Independent Variable(s) (IV): The variable being manipulated or used to predict
-2. Dependent Variable(s) (DV): The outcome being measured
-3. Covariates: Variables controlled for statistically
-4. Demographic variables to collect (age, gender, education — always recommend collecting these)
+Format your response as:
 
-OPERATIONALIZATION GUIDELINES:
-- Be specific: "anxiety will be measured using the GAD-7 (7 items, Likert 0-3)" is good; "anxiety will be measured" is not
-- For IVs in experimental designs: describe the manipulation precisely
-- For IVs in correlational designs: describe the measurement instrument
-- Always recommend validated instruments where available
-- Specify how constructs will be scored (sum, mean, subscale structure)
+1. [Scheme name — e.g., "Self-report focused"]. IV: [variable + operationalization + measurement instrument]. DV: [variable + operationalization + measurement instrument, including scale name and items]. Covariates: [list 1-3 with operationalization]. [1-2 sentences on why this scheme fits the hypothesis.]
 
-COMMON OPERATIONALIZATION PITFALLS TO AVOID:
-- Circular definitions (defining anxiety as "feeling anxious")
-- Unmeasurable constructs without specifying the instrument
-- Conflating conceptual and operational definitions
+2. [Scheme name — e.g., "Behavioral measures"]. IV: [variable + operationalization + measurement]. DV: [variable + operationalization + measurement]. Covariates: [list 1-3]. [1-2 sentences on why this scheme fits.]
 
-End with a summary table of all variables.
+3. [Scheme name — e.g., "Mixed methods"]. IV: [variable + operationalization + measurement]. DV: [variable + operationalization + measurement]. Covariates: [list 1-3]. [1-2 sentences on why this scheme fits.]
+
+Do NOT include any text outside the numbered options.
+
+GUIDELINES:
+- Each scheme must be COMPLETE — IV + DV + covariates clearly specified
+- Use validated instruments where possible (e.g., GAD-7, PHQ-9, BFI-44)
+- For experimental designs, describe the IV manipulation precisely
+- For correlational designs, describe the measurement instrument
+- Make the 3 schemes meaningfully different (different measurement modalities, different theoretical lenses)
+
+EXAMPLE OPTION:
+1. Self-report focused. IV: 8-week mindfulness training (binary: 1 = treatment, 0 = control), manipulated via randomized assignment. DV: State anxiety, measured by GAD-7 (7 items, Likert 0-3, summed score 0-21). Covariates: Baseline anxiety (GAD-7 pre-test), age, gender. This scheme is low-cost, well-validated, and aligned with most published mindfulness research.

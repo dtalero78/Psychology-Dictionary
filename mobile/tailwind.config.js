@@ -59,11 +59,13 @@ module.exports = {
         },
       },
       fontFamily: {
-        serif: ['SourceSerif4_600SemiBold', 'serif'],
-        'serif-bold': ['SourceSerif4_700Bold', 'serif'],
-        sans: ['Inter_400Regular', 'sans-serif'],
-        'sans-medium': ['Inter_500Medium', 'sans-serif'],
-        'sans-semibold': ['Inter_600SemiBold', 'sans-serif'],
+        // Using iOS system font (San Francisco). 'System' maps to SF on iOS, Roboto on Android.
+        // All classes resolve to system font; weight is controlled separately via fontWeight.
+        serif: ['System'],
+        'serif-bold': ['System'],
+        sans: ['System'],
+        'sans-medium': ['System'],
+        'sans-semibold': ['System'],
       },
       fontSize: {
         // Academic Intelligence type scale

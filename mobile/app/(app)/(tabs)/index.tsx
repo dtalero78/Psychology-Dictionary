@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { api, unwrap } from '../../../src/api/client';
 import { useAuth } from '../../../src/context/AuthContext';
 import type { Project } from '../../../src/types';
-import { Body, Card, H1, LabelCaps, Muted, Pill, Screen } from '../../../components/ui';
+import { Body, Button, Card, H1, LabelCaps, Muted, Pill, Screen } from '../../../components/ui';
 
 export default function DashboardScreen() {
   const { user } = useAuth();
@@ -76,8 +76,14 @@ export default function DashboardScreen() {
           )
         }
         renderItem={({ item }) => (
-          <Pressable onPress={() => router.push(`/(app)/project/${item.id}`)}>
-            <Card className="active:opacity-80">
+          <Pressable
+            onPress={() => {
+              console.log('[Dashboard] tapped project', item.id);
+              router.push(`/(app)/project/${item.id}`);
+            }}
+            style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+          >
+            <Card>
               <View className="flex-row justify-between items-start gap-2 mb-2">
                 <Text className="flex-1 font-serif text-headline-md text-ink" numberOfLines={2}>
                   {item.title}
@@ -93,13 +99,13 @@ export default function DashboardScreen() {
       />
 
       <View className="absolute bottom-6 left-5 right-5">
-        <Pressable
+        <Button
           onPress={createProject}
-          className="bg-navy-deep rounded-lg py-4 items-center active:bg-navy shadow-lg"
+          variant="primary"
           style={{ shadowColor: '#1a2b48', shadowOpacity: 0.3, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 8 }}
         >
-          <Body className="text-white font-sans-semibold text-body-lg">+ New Project</Body>
-        </Pressable>
+          + New Project
+        </Button>
       </View>
     </Screen>
   );
