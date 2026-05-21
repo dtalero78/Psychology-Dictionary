@@ -15,7 +15,7 @@ from ..services.push_service import send_new_response_notification
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-templates = Jinja2Templates(directory=str(Path(__file__).parent.parent.parent.parent / "web" / "templates"))
+templates = Jinja2Templates(directory=str(Path(__file__).parent.parent.parent / "web" / "templates"))
 
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(tags=["public"])
