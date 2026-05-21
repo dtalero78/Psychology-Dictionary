@@ -1,7 +1,23 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { api, unwrap } from '../api/client';
 import type { User, TokenResponse } from '../types';
+
+const storage = {
+  async getItem(key: string): Promise<string | null> {
+    if (Platform.OS === 'web') return globalThis.localStorage?.getItem(key) ?? null;
+    return storage.getItem(key);
+  },
+  async setItem(key: string, value: string): Promise<void> {
+    if (Platform.OS === 'web') return globalThis.localStorage?.setItem(key, value);
+    return storage.setItem(key, value);
+  },
+  async deleteItem(key: string): Promise<void> {
+    if (Platform.OS === 'web') return globalThis.localStorage?.removeItem(key);
+    return storage.deleteItem(key);
+  },
+};
 
 interface AuthState {
   user: User | null;
@@ -21,8 +37,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   async function storeTokens(tokens: TokenResponse) {
-    await SecureStore.setItemAsync('access_token', tokens.access_token);
-    await SecureStore.setItemAsync('refresh_token', tokens.refresh_token);
+    await storage.setItem('access_token', tokens.access_token);
+    await storage.setItem('refresh_token', tokens.refresh_token);
   }
 
   async function fetchMe() {
@@ -32,13 +48,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      const token = await SecureStore.getItemAsync('access_token');
+      const token = await storage.getItem('access_token');
       if (token) {
         try {
           await fetchMe();
         } catch {
-          await SecureStore.deleteItemAsync('access_token');
-          await SecureStore.deleteItemAsync('refresh_token');
+          await storage.deleteItem('access_token');
+          await storage.deleteItem('refresh_token');
         }
       }
       setIsLoading(false);
@@ -64,8 +80,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function logout() {
-    await SecureStore.deleteItemAsync('access_token');
-    await SecureStore.deleteItemAsync('refresh_token');
+    await storage.deleteItem('access_token');
+    await storage.deleteItem('refresh_token');
     setUser(null);
   }
 
