@@ -7,7 +7,7 @@ import { api, unwrap } from '../../../src/api/client';
 import type { SubscriptionStatus } from '../../../src/types';
 import { Body, Button, Card, H1, LabelCaps, Muted, Pill, Screen } from '../../../components/ui';
 
-const PRODUCT_ID = 'com.psychologydictionary.annual';
+const PRODUCT_ID = 'com.psychologydictionary.pro.annual';
 
 export default function SettingsScreen() {
   const { user, logout, refreshUser } = useAuth();

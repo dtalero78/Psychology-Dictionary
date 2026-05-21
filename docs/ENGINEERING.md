@@ -164,7 +164,7 @@ ios/
 
 ### 3.2 StoreKit 2
 
-- Product ID: `com.psychologydictionary.annual` — $79.99/year
+- Product ID: `com.psychologydictionary.pro.annual` — $79.99/year
 - Verification on backend (POST /subscriptions/verify with RevenueCat)
 - `StoreManager` checks entitlement before any paid action
 - Restore purchases on Settings screen

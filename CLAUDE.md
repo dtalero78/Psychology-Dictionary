@@ -49,7 +49,7 @@ App name: **Psychology Dictionary Lab**
 - NativeWind for styling (Tailwind classes)
 - expo-secure-store for JWT storage — never AsyncStorage for auth tokens
 - Single `api.ts` client with axios + interceptors for auth headers
-- RevenueCat product ID: `com.psychologydictionary.annual` ($79.99/year)
+- RevenueCat product ID: `com.psychologydictionary.pro.annual` ($79.99/year)
 - No Redux — React Context + hooks is sufficient
 - No Alamofire equivalent — axios only
 
