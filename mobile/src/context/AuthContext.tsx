@@ -7,15 +7,21 @@ import type { User, TokenResponse } from '../types';
 const storage = {
   async getItem(key: string): Promise<string | null> {
     if (Platform.OS === 'web') return globalThis.localStorage?.getItem(key) ?? null;
-    return storage.getItem(key);
+    return SecureStore.getItemAsync(key);
   },
   async setItem(key: string, value: string): Promise<void> {
-    if (Platform.OS === 'web') return globalThis.localStorage?.setItem(key, value);
-    return storage.setItem(key, value);
+    if (Platform.OS === 'web') {
+      globalThis.localStorage?.setItem(key, value);
+      return;
+    }
+    return SecureStore.setItemAsync(key, value);
   },
   async deleteItem(key: string): Promise<void> {
-    if (Platform.OS === 'web') return globalThis.localStorage?.removeItem(key);
-    return storage.deleteItem(key);
+    if (Platform.OS === 'web') {
+      globalThis.localStorage?.removeItem(key);
+      return;
+    }
+    return SecureStore.deleteItemAsync(key);
   },
 };
 
