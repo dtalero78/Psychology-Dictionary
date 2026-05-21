@@ -23,23 +23,48 @@ target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
-    context.configure(url=url, target_metadata=target_metadata, literal_binds=True, dialect_opts={"paramstyle": "named"})
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+        include_schemas=True,
+        version_table_schema="psydict",
+    )
     with context.begin_transaction():
         context.run_migrations()
 
 
 def run_migrations_online() -> None:
-    connectable = engine_from_config(config.get_section(config.config_ini_section, {}), prefix="sqlalchemy.", poolclass=pool.NullPool)
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
 
-    # All psydict tables live in the "psydict" schema so they don't collide
-    # with other projects sharing the same PostgreSQL cluster (e.g. BRS).
-    # doadmin (superuser) can CREATE SCHEMA, so this works on DO managed DBs.
     with connectable.connect().execution_options(isolation_level="AUTOCOMMIT") as setup_conn:
+        # If psydict.users exists but lacks apple_sub the initial migration ran
+        # in the wrong schema (public). Drop psydict so alembic re-runs clean.
+        has_apple_sub = setup_conn.execute(text("""
+            SELECT COUNT(*) FROM information_schema.columns
+            WHERE table_schema = 'psydict'
+              AND table_name   = 'users'
+              AND column_name  = 'apple_sub'
+        """)).scalar()
+
+        if not has_apple_sub:
+            print("[migrate] psydict schema is missing or incomplete — rebuilding")
+            setup_conn.execute(text("DROP SCHEMA IF EXISTS psydict CASCADE"))
+
         setup_conn.execute(text("CREATE SCHEMA IF NOT EXISTS psydict"))
 
     with connectable.connect() as connection:
-        connection.execute(text("SET search_path TO psydict, public"))
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            include_schemas=True,
+            version_table_schema="psydict",
+        )
         with context.begin_transaction():
             context.run_migrations()
 
