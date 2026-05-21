@@ -1,9 +1,9 @@
-# Psychology Dictionary: AI Tutor — Claude Code Instructions
+# Psychology Dictionary Lab — Claude Code Instructions
 
 ## Project Overview
 Expo React Native app + Python backend (FastAPI) + web survey participant page.
 Target: psychology students and researchers (English-speaking, US market).
-App name: **Psychology Dictionary: AI Tutor**
+App name: **Psychology Dictionary Lab**
 
 ## Repo Structure
 ```
@@ -49,13 +49,13 @@ App name: **Psychology Dictionary: AI Tutor**
 - NativeWind for styling (Tailwind classes)
 - expo-secure-store for JWT storage — never AsyncStorage for auth tokens
 - Single `api.ts` client with axios + interceptors for auth headers
-- RevenueCat product ID: `com.psychologydictionary.annual` ($70/year)
+- RevenueCat product ID: `com.psychologydictionary.annual` ($79.99/year)
 - No Redux — React Context + hooks is sufficient
 - No Alamofire equivalent — axios only
 
 ## Monetization Logic
 - **Free tier**: 1 project maximum, 50 survey responses maximum
-- **Paid ($70/year)**: unlimited projects, unlimited responses, .docx export
+- **Paid ($79.99/year)**: unlimited projects, unlimited responses, .docx export
 - Gate check happens on backend — never trust client-side only
 
 ## Business Rules

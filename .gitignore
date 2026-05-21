@@ -1,0 +1,18 @@
+# Harness artifacts (design + coding) — large, ephemeral
+.harness-design/
+.harness/
+.playwright-mcp/
+
+# Local design review screenshots
+.stitch-review/
+
+# Loose screenshots in root
+*.png
+!mobile/assets/*.png
+!public/*.png
+!backend/**/*.png
+!web/**/*.png
+!docs/**/*.png
+
+# OS
+.DS_Store

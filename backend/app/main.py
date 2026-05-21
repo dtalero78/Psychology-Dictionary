@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Psychology Dictionary: AI Tutor API",
+    title="Psychology Dictionary Lab API",
     version="1.0.0",
     docs_url="/docs" if not settings.is_production else None,
     redoc_url=None,

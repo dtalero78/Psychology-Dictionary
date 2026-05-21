@@ -1,5 +1,5 @@
 # Product Requirements Document
-## Psychology Dictionary: AI Tutor
+## Psychology Dictionary Lab
 
 **Version**: 1.0  
 **Date**: 2026-05-18  
@@ -17,7 +17,7 @@ No tool today guides a psychology student through the full research design pipel
 
 ## 2. Solution
 
-**Psychology Dictionary: AI Tutor** is an iOS app that walks students and researchers through every phase of empirical research design using a structured, AI-powered wizard. The app combines validated academic templates with Claude AI to generate hypotheses, operationalize variables, recommend and build measurement instruments, run statistical analyses, and produce a complete APA 7th edition draft document ready to submit.
+**Psychology Dictionary Lab** is an iOS app that walks students and researchers through every phase of empirical research design using a structured, AI-powered wizard. The app combines validated academic templates with Claude AI to generate hypotheses, operationalize variables, recommend and build measurement instruments, run statistical analyses, and produce a complete APA 7th edition draft document ready to submit.
 
 ---
 
@@ -102,7 +102,7 @@ Results are returned with: test statistic, p-value, effect size (Cohen's d, η²
 | Plan | Price | Limits |
 |---|---|---|
 | **Free** | $0 | 1 project, 50 survey responses, in-app APA preview only |
-| **Pro Annual** | $70/year | Unlimited projects, unlimited responses, PDF + .docx export, all statistical tests |
+| **Pro Annual** | $79.99/year | Unlimited projects, unlimited responses, PDF + .docx export, all statistical tests |
 
 - Payment via Apple StoreKit 2 (in-app purchase)
 - No monthly plan in v1

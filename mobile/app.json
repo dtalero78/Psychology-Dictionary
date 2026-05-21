@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Psychology Dictionary: AI Tutor",
+    "name": "Psychology Dictionary Lab",
     "slug": "psychology-dictionary",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#f8f9fa"
     },
     "ios": {
       "supportsTablet": false,
@@ -42,10 +42,11 @@
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
-          "color": "#00BDB6"
+          "color": "#6f518e"
         }
       ],
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-font"
     ],
     "extra": {
       "router": {},

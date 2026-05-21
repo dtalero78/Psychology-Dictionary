@@ -1,12 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
-import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  SafeAreaView, ActivityIndicator, Alert, Linking,
-} from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { api, unwrap } from '../../../src/api/client';
 import { useAuth } from '../../../src/context/AuthContext';
 import type { ApaDocument } from '../../../src/types';
+import { Body, Button, H2, LabelCaps, Muted, Screen } from '../../../components/ui';
 
 const SECTIONS = [
   { key: 'abstract', label: 'Abstract' },
@@ -37,7 +35,9 @@ export default function DocumentScreen() {
     }
   }, [projectId]);
 
-  useEffect(() => { fetchLatest(); }, [fetchLatest]);
+  useEffect(() => {
+    fetchLatest();
+  }, [fetchLatest]);
 
   async function generate() {
     setGenerating(true);
@@ -63,7 +63,7 @@ export default function DocumentScreen() {
 
   async function exportDocx() {
     if (user?.plan !== 'pro') {
-      Alert.alert('Pro Feature', '.docx export is available on the Pro plan ($70/year). Upgrade in Settings.');
+      Alert.alert('Pro Feature', '.docx export is available on the Pro plan ($79.99/year). Upgrade in Settings.');
       return;
     }
     if (!doc?.docx_url) {
@@ -74,141 +74,94 @@ export default function DocumentScreen() {
   }
 
   function toggleSection(key: string) {
-    setExpandedSection(prev => prev === key ? null : key);
+    setExpandedSection((prev) => (prev === key ? null : key));
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backText}>‹ Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>APA Report</Text>
-        <View style={{ width: 60 }} />
+    <Screen>
+      <View className="bg-surface-lowest border-b border-outline-soft px-4 py-3 flex-row items-center">
+        <Pressable onPress={() => router.back()} className="w-16">
+          <Text className="font-sans-medium text-body-md text-navy">‹ Back</Text>
+        </Pressable>
+        <Text className="flex-1 text-center font-serif text-headline-md text-ink">APA Report</Text>
+        <View className="w-16" />
       </View>
 
       {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={C.teal} size="large" />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color="#6f518e" size="large" />
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.content}>
-          {/* Generate / Regenerate CTA */}
-          <TouchableOpacity
-            style={[styles.genBtn, generating && styles.genBtnDisabled]}
-            onPress={generate}
-            disabled={generating}
-          >
-            {generating ? (
-              <><ActivityIndicator color="#fff" size="small" /><Text style={styles.genBtnText}>  Generating with AI…</Text></>
-            ) : (
-              <Text style={styles.genBtnText}>{doc ? 'Regenerate Report ✦' : 'Generate APA Report ✦'}</Text>
-            )}
-          </TouchableOpacity>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 16 }}>
+          <Button onPress={generate} loading={generating} variant="success">
+            ✦ {doc ? 'Regenerate Report' : 'Generate APA Report'}
+          </Button>
 
           {generating && (
-            <Text style={styles.genHint}>This may take 30–60 seconds. Claude is writing all sections in APA 7th edition format.</Text>
+            <Muted className="italic text-center text-label-sm">
+              This may take 30–60 seconds. Claude is writing all sections in APA 7th edition format.
+            </Muted>
           )}
 
           {doc && (
             <>
-              {/* Export row */}
-              <View style={styles.exportRow}>
-                <TouchableOpacity style={styles.exportBtn} onPress={openPdf}>
-                  <Text style={styles.exportBtnText}>Open PDF</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.exportBtn, user?.plan !== 'pro' && styles.exportBtnLocked]}
+              <View className="flex-row gap-2.5">
+                <Pressable onPress={openPdf} className="flex-1 bg-navy-deep rounded py-3 items-center active:bg-navy">
+                  <Text className="font-sans-semibold text-white text-body-md">Open PDF</Text>
+                </Pressable>
+                <Pressable
                   onPress={exportDocx}
+                  className={`flex-1 rounded py-3 items-center ${user?.plan === 'pro' ? 'bg-purple active:bg-purple/80' : 'bg-surface-high'}`}
                 >
-                  <Text style={styles.exportBtnText}>
+                  <Text className={`font-sans-semibold text-body-md ${user?.plan === 'pro' ? 'text-white' : 'text-ink-muted'}`}>
                     {user?.plan === 'pro' ? 'Export .docx' : 'Export .docx 🔒'}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
 
               {doc.content_json.title && (
-                <Text style={styles.docTitle}>{doc.content_json.title}</Text>
+                <H2 className="text-center leading-7">{doc.content_json.title}</H2>
               )}
 
-              {/* Sections */}
-              {SECTIONS.map(({ key, label }) => {
-                const text = doc.content_json[key];
-                if (!text) return null;
-                const expanded = expandedSection === key;
-                return (
-                  <View key={key} style={styles.sectionCard}>
-                    <TouchableOpacity
-                      style={styles.sectionHeader}
-                      onPress={() => toggleSection(key)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.sectionLabel}>{label}</Text>
-                      <Text style={styles.sectionChevron}>{expanded ? '▲' : '▼'}</Text>
-                    </TouchableOpacity>
-                    {expanded && (
-                      <Text style={styles.sectionBody}>{text}</Text>
-                    )}
-                  </View>
-                );
-              })}
+              <View className="gap-2">
+                {SECTIONS.map(({ key, label }) => {
+                  const text = doc.content_json[key];
+                  if (!text) return null;
+                  const expanded = expandedSection === key;
+                  return (
+                    <View key={key} className="bg-surface-lowest rounded border border-outline-soft overflow-hidden">
+                      <Pressable
+                        onPress={() => toggleSection(key)}
+                        className="flex-row justify-between items-center p-4 active:bg-surface-low"
+                      >
+                        <Text className="font-serif text-headline-md text-ink">{label}</Text>
+                        <Text className="font-sans text-label-sm text-ink-muted">{expanded ? '▲' : '▼'}</Text>
+                      </Pressable>
+                      {expanded && (
+                        <Text className="font-sans text-body-md text-ink leading-6 px-4 pb-4">{text}</Text>
+                      )}
+                    </View>
+                  );
+                })}
+              </View>
 
-              <Text style={styles.generatedAt}>
+              <Muted className="text-center text-label-sm mt-2">
                 Generated {new Date(doc.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </Text>
+              </Muted>
             </>
           )}
 
           {!doc && !generating && (
-            <View style={styles.empty}>
-              <Text style={styles.emptyIcon}>📄</Text>
-              <Text style={styles.emptyTitle}>No report yet</Text>
-              <Text style={styles.emptySubtitle}>
+            <View className="items-center py-10">
+              <Text className="text-5xl mb-4">📄</Text>
+              <H2 className="mb-2">No report yet</H2>
+              <Muted className="text-center">
                 Complete your research design steps, then generate a full APA 7th edition report — abstract, introduction, method, results, discussion, and references.
-              </Text>
+              </Muted>
             </View>
           )}
-
-          <View style={{ height: 40 }} />
         </ScrollView>
       )}
-    </SafeAreaView>
+    </Screen>
   );
 }
-
-const C = { teal: '#00BDB6', dark: '#133844', tint: '#D1F9F1', edge: '#8EE8D8', ink: '#232830', sub: '#546072', bg: '#f5f7f7', card: '#fff' };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: C.bg },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: C.card, borderBottomWidth: 0.5, borderBottomColor: C.edge },
-  backBtn: { width: 60 },
-  backText: { color: C.teal, fontSize: 16 },
-  headerTitle: { flex: 1, textAlign: 'center', fontSize: 16, fontWeight: '600', color: C.ink },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  content: { padding: 16 },
-
-  genBtn: { backgroundColor: C.dark, borderRadius: 14, paddingVertical: 16, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', marginBottom: 8 },
-  genBtnDisabled: { backgroundColor: C.sub },
-  genBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  genHint: { fontSize: 13, color: C.sub, textAlign: 'center', marginBottom: 20, fontStyle: 'italic', lineHeight: 20 },
-
-  exportRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
-  exportBtn: { flex: 1, backgroundColor: C.teal, borderRadius: 12, paddingVertical: 12, alignItems: 'center' },
-  exportBtnLocked: { backgroundColor: C.sub },
-  exportBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
-
-  docTitle: { fontSize: 18, fontWeight: '700', color: C.dark, textAlign: 'center', marginBottom: 20, lineHeight: 26 },
-
-  sectionCard: { backgroundColor: C.card, borderRadius: 14, marginBottom: 10, overflow: 'hidden', borderWidth: 1, borderColor: C.edge },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
-  sectionLabel: { fontSize: 15, fontWeight: '700', color: C.dark },
-  sectionChevron: { fontSize: 11, color: C.sub },
-  sectionBody: { fontSize: 14, color: C.ink, lineHeight: 24, paddingHorizontal: 16, paddingBottom: 16 },
-
-  generatedAt: { fontSize: 12, color: C.sub, textAlign: 'center', marginTop: 16 },
-
-  empty: { alignItems: 'center', paddingVertical: 40 },
-  emptyIcon: { fontSize: 48, marginBottom: 16 },
-  emptyTitle: { fontSize: 20, fontWeight: '700', color: C.dark, marginBottom: 8 },
-  emptySubtitle: { fontSize: 15, color: C.sub, textAlign: 'center', lineHeight: 22 },
-});

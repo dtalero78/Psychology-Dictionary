@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator, SafeAreaView } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { api, unwrap } from '../../../src/api/client';
 import type { Project, StepResult } from '../../../src/types';
+import { TutorCard, Body, Button, H2, LabelCaps, Muted, Pill, Screen, StepProgress } from '../../../components/ui';
 
 const STEPS = [
-  { num: 1, title: 'Topic', placeholder: 'Enter a keyword or topic (e.g., "social media anxiety")' },
-  { num: 2, title: 'Research Question', placeholder: 'Describe your topic or paste the AI suggestion from Step 1' },
-  { num: 3, title: 'Hypothesis', placeholder: 'Paste your research question or describe what you expect to find' },
-  { num: 4, title: 'Variables', placeholder: 'Describe your hypothesis and the constructs you want to measure' },
-  { num: 5, title: 'Method', placeholder: 'Describe your variables and any design constraints (time, participants available)' },
-  { num: 6, title: 'Instrument', placeholder: 'Describe the variable you need to measure. Mention any preferred scales.' },
-  { num: 7, title: 'Analysis Plan', placeholder: 'Describe your variables and expected data type (scores, groups, etc.)' },
-  { num: 8, title: 'Limitations', placeholder: 'Paste a summary of your full study design for a limitations review' },
-];
+  { num: 1, section: 'Topic Discovery', title: 'Find your research topic', placeholder: 'Enter a keyword or topic (e.g., "social media anxiety")' },
+  { num: 2, section: 'Research Question', title: 'Formulate your research question', placeholder: 'Describe your topic or paste the tutor suggestion from Step 1' },
+  { num: 3, section: 'Hypothesis', title: 'State your hypothesis', placeholder: 'Paste your research question or describe what you expect to find' },
+  { num: 4, section: 'Variables', title: 'Define your variables', placeholder: 'Describe your hypothesis and the constructs you want to measure' },
+  { num: 5, section: 'Methodology', title: 'Choose your research design', placeholder: 'Describe your variables and any design constraints (time, participants available)' },
+  { num: 6, section: 'Instrument', title: 'Select your measurement instrument', placeholder: 'Describe the variable you need to measure. Mention any preferred scales.' },
+  { num: 7, section: 'Analysis Plan', title: 'Plan your statistical analysis', placeholder: 'Describe your variables and expected data type (scores, groups, etc.)' },
+  { num: 8, section: 'Limitations', title: 'Acknowledge study limitations', placeholder: 'Paste a summary of your full study design for a limitations review' },
+] as const;
 
 export default function ProjectScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -55,7 +56,7 @@ export default function ProjectScreen() {
       setAiResponse(result.ai_response);
       await fetchProject();
     } catch (e: any) {
-      Alert.alert('AI Error', e?.response?.data?.error ?? e.message);
+      Alert.alert('Error', e?.response?.data?.error ?? e.message);
     } finally {
       setLoading(false);
     }
@@ -68,98 +69,109 @@ export default function ProjectScreen() {
   }
 
   const stepInfo = STEPS.find((s) => s.num === activeStep)!;
+  const isFinalStep = activeStep === 8;
+  const previousStepData = activeStep > 1 ? project?.steps_json[String(activeStep - 1)] : null;
+  const previousStepInfo = activeStep > 1 ? STEPS[activeStep - 2] : null;
+  const nextStepLabel = activeStep < 8 ? STEPS[activeStep].section : 'Generate APA Paper';
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerRow}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backText}>‹ Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.projectTitle} numberOfLines={1}>{project?.title ?? '…'}</Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity onPress={() => router.push(`/(app)/analysis/${id}`)}>
-            <Text style={styles.actionBtnText}>Stats</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push(`/(app)/survey/index?projectId=${id}`)}>
-            <Text style={styles.actionBtnText}>Surveys</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push(`/(app)/document/${id}`)}>
-            <Text style={styles.actionBtnText}>Report</Text>
-          </TouchableOpacity>
+    <Screen>
+      <View className="bg-surface-lowest border-b border-outline-soft px-4 pt-3 pb-3 flex-row items-center">
+        <Pressable onPress={() => router.back()} className="w-16">
+          <Text className="font-sans-medium text-body-md text-navy">‹ Back</Text>
+        </Pressable>
+        <Text className="flex-1 text-center font-serif text-headline-md text-ink" numberOfLines={1}>
+          {project?.title ?? '…'}
+        </Text>
+        <View className="flex-row gap-3 items-center w-16 justify-end">
+          <Pressable onPress={() => router.push(`/(app)/analysis/${id}`)}>
+            <Text className="font-sans-semibold text-label-sm text-navy">Stats</Text>
+          </Pressable>
+          <Pressable onPress={() => router.push(`/(app)/document/${id}`)}>
+            <Text className="font-sans-semibold text-label-sm text-navy">Report</Text>
+          </Pressable>
         </View>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.stepNav} contentContainerStyle={styles.stepNavContent}>
-        {STEPS.map((s) => {
-          const done = project?.steps_json[String(s.num)];
-          const active = s.num === activeStep;
-          return (
-            <TouchableOpacity key={s.num} style={[styles.stepPill, active && styles.stepPillActive, done && !active && styles.stepPillDone]} onPress={() => goToStep(s.num)}>
-              <Text style={[styles.stepPillText, active && styles.stepPillTextActive]}>{done ? '✓' : s.num}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      <View className="px-4 py-3 bg-surface-lowest border-b border-outline-soft gap-2">
+        <View className="flex-row items-center justify-between">
+          <LabelCaps className="text-navy">Step {activeStep} of 8</LabelCaps>
+          <Text className="font-serif text-headline-md text-navy">{stepInfo.section}</Text>
+        </View>
+        <StepProgress current={activeStep} />
+      </View>
 
-      <ScrollView style={styles.body} contentContainerStyle={{ padding: 16 }}>
-        <Text style={styles.stepLabel}>Step {activeStep} of 8</Text>
-        <Text style={styles.stepTitle}>{stepInfo.title}</Text>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 16 }}>
+        <View>
+          <H2>{stepInfo.title}</H2>
+          <Muted className="mt-1">Your tutor will help you refine this step.</Muted>
+        </View>
 
-        <TextInput
-          style={styles.textInput}
-          multiline
-          numberOfLines={5}
-          placeholder={stepInfo.placeholder}
-          value={input}
-          onChangeText={setInput}
-          textAlignVertical="top"
-        />
-
-        <TouchableOpacity style={[styles.runBtn, loading && styles.runBtnDisabled]} onPress={runStep} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.runBtnText}>Generate with AI ✦</Text>}
-        </TouchableOpacity>
-
-        {!!aiResponse && (
-          <View style={styles.responseCard}>
-            <Text style={styles.responseLabel}>AI Response</Text>
-            <Text style={styles.responseText}>{aiResponse}</Text>
-            {activeStep < 8 && (
-              <TouchableOpacity style={styles.nextBtn} onPress={() => goToStep(activeStep + 1)}>
-                <Text style={styles.nextBtnText}>Next Step →</Text>
-              </TouchableOpacity>
-            )}
+        {previousStepData && previousStepInfo && (
+          <View className="bg-surface-low rounded p-4 border border-outline-soft">
+            <LabelCaps className="text-navy mb-2">
+              From Step {previousStepInfo.num}: {previousStepInfo.section}
+            </LabelCaps>
+            <Text className="font-serif text-body-lg italic text-ink" numberOfLines={4}>
+              {previousStepData.ai_response}
+            </Text>
           </View>
         )}
+
+        <View className="gap-2">
+          <LabelCaps>Your input</LabelCaps>
+          <TextInput
+            className="bg-surface-lowest border border-outline-soft rounded p-4 font-sans text-body-md text-ink min-h-32"
+            placeholder={stepInfo.placeholder}
+            placeholderTextColor="#75777e"
+            value={input}
+            onChangeText={setInput}
+            multiline
+            textAlignVertical="top"
+          />
+        </View>
+
+        <Button onPress={runStep} loading={loading} variant="primary">
+          ✦ Generate
+        </Button>
+
+        {!!aiResponse && (
+          <TutorCard label="TUTOR">
+            <Text className="font-sans text-body-lg text-ink leading-7">{aiResponse}</Text>
+            <View className="flex-row gap-2 mt-4 flex-wrap">
+              <Pill color="purple">PICO ✓</Pill>
+              <Pill color="purple">Measurable ✓</Pill>
+            </View>
+          </TutorCard>
+        )}
+
+        {!!aiResponse && activeStep < 8 && (
+          <Button onPress={() => goToStep(activeStep + 1)} variant="primary">
+            Next Step: {nextStepLabel} →
+          </Button>
+        )}
+
+        {!!aiResponse && isFinalStep && (
+          <Button onPress={() => router.push(`/(app)/document/${id}`)} variant="success">
+            🎓 Generate APA Paper →
+          </Button>
+        )}
+
+        {activeStep > 1 && (
+          <Pressable onPress={() => goToStep(activeStep - 1)} className="items-center py-2">
+            <Text className="font-sans text-label-sm text-ink-muted">Back to Step {activeStep - 1}</Text>
+          </Pressable>
+        )}
       </ScrollView>
-    </SafeAreaView>
+
+      {loading && (
+        <View className="absolute inset-0 bg-ink/10 items-center justify-center">
+          <View className="bg-surface-lowest rounded-lg p-6 items-center gap-3">
+            <ActivityIndicator color="#6f518e" size="large" />
+            <Body className="text-purple font-sans-semibold">Thinking…</Body>
+          </View>
+        </View>
+      )}
+    </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f7' },
-  headerRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: '#e0e0e0', backgroundColor: '#fff' },
-  backBtn: { width: 60 },
-  backText: { color: '#00BDB6', fontSize: 17 },
-  headerActions: { flexDirection: 'row', gap: 12, alignItems: 'center' },
-  actionBtnText: { color: '#00BDB6', fontSize: 13, fontWeight: '700' },
-  projectTitle: { flex: 1, textAlign: 'center', fontSize: 16, fontWeight: '600', color: '#1d1d1f' },
-  stepNav: { backgroundColor: '#fff', borderBottomWidth: 0.5, borderBottomColor: '#e0e0e0' },
-  stepNavContent: { paddingHorizontal: 12, paddingVertical: 10, gap: 8 },
-  stepPill: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#f0f0f0', alignItems: 'center', justifyContent: 'center' },
-  stepPillActive: { backgroundColor: '#004AAE' },
-  stepPillDone: { backgroundColor: '#e8f5e9' },
-  stepPillText: { fontSize: 14, fontWeight: '700', color: '#666' },
-  stepPillTextActive: { color: '#fff' },
-  body: { flex: 1 },
-  stepLabel: { fontSize: 13, color: '#888', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
-  stepTitle: { fontSize: 22, fontWeight: '700', color: '#1d1d1f', marginBottom: 16 },
-  textInput: { backgroundColor: '#fff', borderRadius: 12, borderWidth: 1.5, borderColor: '#e0e0e0', padding: 14, fontSize: 15, lineHeight: 22, minHeight: 120, marginBottom: 12 },
-  runBtn: { backgroundColor: '#004AAE', borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginBottom: 20 },
-  runBtnDisabled: { backgroundColor: '#aaa' },
-  runBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  responseCard: { backgroundColor: '#fff', borderRadius: 14, padding: 16, borderLeftWidth: 3, borderLeftColor: '#004AAE' },
-  responseLabel: { fontSize: 12, color: '#004AAE', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
-  responseText: { fontSize: 15, color: '#1d1d1f', lineHeight: 24 },
-  nextBtn: { marginTop: 16, backgroundColor: '#dce6f5', borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
-  nextBtnText: { color: '#004AAE', fontSize: 15, fontWeight: '700' },
-});

@@ -1,5 +1,5 @@
 # Engineering Requirements
-## Psychology Dictionary: AI Tutor
+## Psychology Dictionary Lab
 
 **Version**: 1.0  
 **Date**: 2026-05-18
@@ -164,7 +164,7 @@ ios/
 
 ### 3.2 StoreKit 2
 
-- Product ID: `com.psychologydictionary.annual` — $70/year
+- Product ID: `com.psychologydictionary.annual` — $79.99/year
 - Verification on backend (POST /subscriptions/verify with RevenueCat)
 - `StoreManager` checks entitlement before any paid action
 - Restore purchases on Settings screen

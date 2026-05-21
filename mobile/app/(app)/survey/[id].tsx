@@ -1,15 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
-import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  Alert, SafeAreaView, ActivityIndicator, Share, Clipboard,
-} from 'react-native';
+import { ActivityIndicator, Alert, Clipboard, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import QRCode from 'react-native-qrcode-svg';
 import { api, unwrap } from '../../../src/api/client';
 import type { Survey } from '../../../src/types';
+import { Card, LabelCaps, Muted, Pill, Screen } from '../../../components/ui';
 
 export default function SurveyDetailScreen() {
-  const { id, projectId } = useLocalSearchParams<{ id: string; projectId: string }>();
+  const { id } = useLocalSearchParams<{ id: string; projectId: string }>();
   const [survey, setSurvey] = useState<Survey | null>(null);
   const [responseCount, setResponseCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -30,7 +28,9 @@ export default function SurveyDetailScreen() {
     }
   }, [id]);
 
-  useEffect(() => { fetchSurvey(); }, [fetchSurvey]);
+  useEffect(() => {
+    fetchSurvey();
+  }, [fetchSurvey]);
 
   async function copyLink() {
     if (!survey) return;
@@ -47,7 +47,9 @@ export default function SurveyDetailScreen() {
     Alert.alert('Close survey?', 'Participants will no longer be able to submit responses.', [
       { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Close', style: 'destructive', onPress: async () => {
+        text: 'Close',
+        style: 'destructive',
+        onPress: async () => {
           setClosing(true);
           try {
             await api.put(`/surveys/${id}/close`);
@@ -66,7 +68,9 @@ export default function SurveyDetailScreen() {
     Alert.alert('Delete survey?', 'All responses will be permanently deleted.', [
       { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Delete', style: 'destructive', onPress: async () => {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
           try {
             await api.delete(`/surveys/${id}`);
             router.back();
@@ -80,9 +84,11 @@ export default function SurveyDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.center}><ActivityIndicator color={C.teal} size="large" /></View>
-      </SafeAreaView>
+      <Screen>
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color="#6f518e" size="large" />
+        </View>
+      </Screen>
     );
   }
 
@@ -92,131 +98,91 @@ export default function SurveyDetailScreen() {
   const qCount = survey.config_json.questions?.length ?? 0;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backText}>‹ Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>{survey.title}</Text>
-        <View style={{ width: 60 }} />
+    <Screen>
+      <View className="bg-surface-lowest border-b border-outline-soft px-4 py-3 flex-row items-center">
+        <Pressable onPress={() => router.back()} className="w-16">
+          <Text className="font-sans-medium text-body-md text-navy">‹ Back</Text>
+        </Pressable>
+        <Text className="flex-1 text-center font-serif text-headline-md text-ink" numberOfLines={1}>
+          {survey.title}
+        </Text>
+        <View className="w-16" />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Status badge */}
-        <View style={[styles.statusBadge, isActive ? styles.statusActive : styles.statusClosed]}>
-          <Text style={[styles.statusText, isActive ? styles.statusTextActive : styles.statusTextClosed]}>
-            {isActive ? '● Active' : '✕ Closed'}
-          </Text>
-        </View>
+      <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }}>
+        <Pill color={isActive ? 'teal' : 'gray'}>{isActive ? '● Active' : '✕ Closed'}</Pill>
 
-        {/* Stats row */}
-        <View style={styles.statsRow}>
-          <View style={styles.statBox}>
-            <Text style={styles.statNum}>{responseCount}</Text>
-            <Text style={styles.statLabel}>Responses</Text>
+        <View className="flex-row bg-surface-lowest rounded border border-outline-soft overflow-hidden">
+          <View className="flex-1 py-5 items-center">
+            <Text className="font-serif-bold text-display-lg text-navy">{responseCount}</Text>
+            <LabelCaps className="mt-0.5">Responses</LabelCaps>
           </View>
-          <View style={[styles.statBox, styles.statBoxMid]}>
-            <Text style={styles.statNum}>{qCount}</Text>
-            <Text style={styles.statLabel}>Questions</Text>
+          <View className="flex-1 py-5 items-center border-l border-r border-outline-soft">
+            <Text className="font-serif-bold text-display-lg text-navy">{qCount}</Text>
+            <LabelCaps className="mt-0.5">Questions</LabelCaps>
           </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statNum}>{survey.config_json.estimated_minutes ?? '—'}</Text>
-            <Text style={styles.statLabel}>Min. est.</Text>
+          <View className="flex-1 py-5 items-center">
+            <Text className="font-serif-bold text-display-lg text-navy">{survey.config_json.estimated_minutes ?? '—'}</Text>
+            <LabelCaps className="mt-0.5">Min. est.</LabelCaps>
           </View>
         </View>
 
-        {/* QR code */}
         {isActive && (
-          <View style={styles.qrCard}>
-            <Text style={styles.qrLabel}>Scan to open survey</Text>
-            <View style={styles.qrBox}>
-              <QRCode value={survey.survey_url} size={180} color={C.dark} backgroundColor="#fff" />
+          <Card className="items-center p-6">
+            <LabelCaps className="mb-4">Scan to open survey</LabelCaps>
+            <View className="p-4 rounded bg-white border border-outline-soft">
+              <QRCode value={survey.survey_url} size={180} color="#1a2b48" backgroundColor="#fff" />
             </View>
-            <Text style={styles.urlText} numberOfLines={2}>{survey.survey_url}</Text>
+            <Muted className="mt-4 text-label-sm text-center px-2" numberOfLines={2}>
+              {survey.survey_url}
+            </Muted>
 
-            <View style={styles.shareRow}>
-              <TouchableOpacity style={styles.shareBtn} onPress={copyLink}>
-                <Text style={styles.shareBtnText}>Copy Link</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.shareBtn, styles.shareBtnPrimary]} onPress={shareLink}>
-                <Text style={[styles.shareBtnText, styles.shareBtnTextPrimary]}>Share…</Text>
-              </TouchableOpacity>
+            <View className="flex-row gap-2.5 mt-4 w-full">
+              <Pressable onPress={copyLink} className="flex-1 py-3 rounded border-2 border-navy items-center active:bg-navy/5">
+                <Text className="font-sans-semibold text-body-md text-navy">Copy Link</Text>
+              </Pressable>
+              <Pressable onPress={shareLink} className="flex-1 py-3 rounded bg-navy-deep items-center active:bg-navy">
+                <Text className="font-sans-semibold text-body-md text-white">Share…</Text>
+              </Pressable>
             </View>
-          </View>
+          </Card>
         )}
 
-        {/* Responses button */}
         {responseCount > 0 && (
-          <TouchableOpacity
-            style={styles.responsesBtn}
+          <Pressable
             onPress={() => router.push(`/(app)/survey/${id}/responses`)}
+            className="bg-purple rounded-lg py-4 items-center active:bg-purple/80"
           >
-            <Text style={styles.responsesBtnText}>View {responseCount} Response{responseCount !== 1 ? 's' : ''} →</Text>
-          </TouchableOpacity>
+            <Text className="font-sans-semibold text-body-lg text-white">
+              View {responseCount} Response{responseCount !== 1 ? 's' : ''} →
+            </Text>
+          </Pressable>
         )}
 
-        {/* Actions */}
-        <View style={styles.actionsSection}>
+        <View className="gap-2.5">
           {isActive && (
-            <TouchableOpacity style={styles.actionBtn} onPress={closeSurvey} disabled={closing}>
-              {closing
-                ? <ActivityIndicator color={C.teal} />
-                : <Text style={styles.actionBtnText}>Close Survey</Text>}
-            </TouchableOpacity>
+            <Pressable
+              onPress={closeSurvey}
+              disabled={closing}
+              className="border border-outline-soft rounded py-3.5 items-center bg-surface-lowest active:bg-surface-low"
+            >
+              {closing ? (
+                <ActivityIndicator color="#6f518e" />
+              ) : (
+                <Text className="font-sans-semibold text-body-md text-ink-muted">Close Survey</Text>
+              )}
+            </Pressable>
           )}
-          <TouchableOpacity style={[styles.actionBtn, styles.actionBtnDanger]} onPress={deleteSurvey}>
-            <Text style={[styles.actionBtnText, styles.actionBtnTextDanger]}>Delete Survey</Text>
-          </TouchableOpacity>
+          <Pressable
+            onPress={deleteSurvey}
+            className="border border-danger/40 rounded py-3.5 items-center bg-danger/5 active:bg-danger/10"
+          >
+            <Text className="font-sans-semibold text-body-md text-danger">Delete Survey</Text>
+          </Pressable>
         </View>
 
-        <Text style={styles.createdAt}>Created {new Date(survey.created_at).toLocaleDateString()}</Text>
+        <Muted className="text-center text-label-sm">Created {new Date(survey.created_at).toLocaleDateString()}</Muted>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
-
-const C = { teal: '#00BDB6', dark: '#133844', tint: '#D1F9F1', edge: '#8EE8D8', ink: '#232830', sub: '#546072', bg: '#f5f7f7', card: '#fff' };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: C.bg },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: C.card, borderBottomWidth: 0.5, borderBottomColor: C.edge },
-  backBtn: { width: 60 },
-  backText: { color: C.teal, fontSize: 16 },
-  headerTitle: { flex: 1, textAlign: 'center', fontSize: 16, fontWeight: '600', color: C.ink },
-  content: { padding: 20, gap: 16 },
-
-  statusBadge: { alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, borderWidth: 1 },
-  statusActive: { backgroundColor: C.tint, borderColor: C.teal },
-  statusClosed: { backgroundColor: '#f5f5f5', borderColor: '#ccc' },
-  statusText: { fontSize: 13, fontWeight: '700' },
-  statusTextActive: { color: C.dark },
-  statusTextClosed: { color: '#888' },
-
-  statsRow: { flexDirection: 'row', backgroundColor: C.card, borderRadius: 14, borderWidth: 1, borderColor: C.edge, overflow: 'hidden' },
-  statBox: { flex: 1, paddingVertical: 18, alignItems: 'center' },
-  statBoxMid: { borderLeftWidth: 1, borderRightWidth: 1, borderColor: C.edge },
-  statNum: { fontSize: 26, fontWeight: '800', color: C.dark },
-  statLabel: { fontSize: 11, color: C.sub, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.4, marginTop: 2 },
-
-  qrCard: { backgroundColor: C.card, borderRadius: 16, padding: 20, alignItems: 'center', borderWidth: 1, borderColor: C.edge },
-  qrLabel: { fontSize: 13, fontWeight: '700', color: C.sub, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 16 },
-  qrBox: { padding: 16, borderRadius: 12, backgroundColor: '#fff', borderWidth: 1, borderColor: C.edge },
-  urlText: { marginTop: 14, fontSize: 12, color: C.sub, textAlign: 'center', paddingHorizontal: 8 },
-  shareRow: { flexDirection: 'row', gap: 10, marginTop: 16, width: '100%' },
-  shareBtn: { flex: 1, paddingVertical: 12, borderRadius: 10, borderWidth: 1.5, borderColor: C.teal, alignItems: 'center' },
-  shareBtnPrimary: { backgroundColor: C.teal, borderColor: C.teal },
-  shareBtnText: { fontSize: 15, fontWeight: '700', color: C.teal },
-  shareBtnTextPrimary: { color: '#fff' },
-
-  responsesBtn: { backgroundColor: C.dark, borderRadius: 12, paddingVertical: 16, alignItems: 'center' },
-  responsesBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
-
-  actionsSection: { gap: 10 },
-  actionBtn: { borderWidth: 1.5, borderColor: C.edge, borderRadius: 12, paddingVertical: 14, alignItems: 'center', backgroundColor: C.card },
-  actionBtnDanger: { borderColor: '#ffcccc', backgroundColor: '#fff5f5' },
-  actionBtnText: { fontSize: 15, fontWeight: '600', color: C.sub },
-  actionBtnTextDanger: { color: '#c0392b' },
-
-  createdAt: { textAlign: 'center', fontSize: 12, color: C.sub },
-});
