@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { api, unwrap } from '../../../src/api/client';
+import { api, aiTimeout, unwrap } from '../../../src/api/client';
 import { useAuth } from '../../../src/context/AuthContext';
 import type { ApaDocument } from '../../../src/types';
 import { Body, Button, H2, LabelCaps, Muted, Screen } from '../../../components/ui';
@@ -42,7 +42,7 @@ export default function DocumentScreen() {
   async function generate() {
     setGenerating(true);
     try {
-      const res = await api.post('/documents', { project_id: projectId });
+      const res = await api.post('/documents', { project_id: projectId }, aiTimeout(180000));
       setDoc(unwrap<ApaDocument>(res));
     } catch (e: any) {
       Alert.alert('Generation failed', e?.response?.data?.error ?? e?.response?.data?.detail ?? e.message);

@@ -158,3 +158,179 @@ def run_analysis(test_type: str, data: dict[str, Any]) -> dict[str, Any]:
     if not fn:
         raise ValueError(f"Unknown test type: {test_type}")
     return fn(data)
+
+
+# ---------------------------------------------------------------------------
+# Survey-response → test-input extractors
+# ---------------------------------------------------------------------------
+# answers_json keys come from the public survey form ("q_0", "q_1", ...) and
+# values arrive as strings. These helpers coerce numerics and skip missing/
+# unparseable cells so a single bad row does not kill the whole analysis.
+
+
+def _coerce_float(v: Any) -> float | None:
+    if v is None or v == "":
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def _numeric_pairs(rows: list[dict], k1: str, k2: str) -> tuple[list[float], list[float]]:
+    a: list[float] = []
+    b: list[float] = []
+    for r in rows:
+        x = _coerce_float(r.get(k1))
+        y = _coerce_float(r.get(k2))
+        if x is not None and y is not None:
+            a.append(x)
+            b.append(y)
+    return a, b
+
+
+def _str_value(v: Any) -> str | None:
+    if v is None:
+        return None
+    s = str(v).strip()
+    return s if s else None
+
+
+def build_test_data(
+    test_type: str,
+    answers: list[dict],
+    mapping: dict[str, Any],
+) -> dict[str, Any]:
+    """Build the inputs that `run_analysis` expects from raw survey rows."""
+
+    def _required(key: str) -> str:
+        v = mapping.get(key)
+        if not v:
+            raise ValueError(f"Mapping field '{key}' is required for {test_type}")
+        return v
+
+    if test_type == "independent_ttest":
+        outcome = _required("outcome_q")
+        grouping = _required("grouping_q")
+        group_values = mapping.get("group_values")
+        if not group_values:
+            # Auto-detect: take the two most-common non-empty values.
+            # Tie-break alphabetically so group ordering is deterministic across runs.
+            counts: dict[str, int] = {}
+            for r in answers:
+                v = _str_value(r.get(grouping))
+                if v is not None:
+                    counts[v] = counts.get(v, 0) + 1
+            group_values = sorted(counts, key=lambda k: (-counts[k], k))[:2]
+            if len(group_values) < 2:
+                raise ValueError("Need at least 2 distinct values in grouping question")
+        if len(group_values) != 2:
+            raise ValueError("independent_ttest requires exactly 2 group values")
+        g1, g2 = [], []
+        for r in answers:
+            label = _str_value(r.get(grouping))
+            score = _coerce_float(r.get(outcome))
+            if label is None or score is None:
+                continue
+            if label == group_values[0]:
+                g1.append(score)
+            elif label == group_values[1]:
+                g2.append(score)
+        if len(g1) < 2 or len(g2) < 2:
+            raise ValueError("Each group needs at least 2 valid responses")
+        return {"group1": g1, "group2": g2}
+
+    if test_type == "paired_ttest":
+        pre = _required("pre_q")
+        post = _required("post_q")
+        a, b = _numeric_pairs(answers, pre, post)
+        if len(a) < 2:
+            raise ValueError("Need at least 2 paired responses")
+        return {"pre": a, "post": b}
+
+    if test_type == "one_way_anova":
+        outcome = _required("outcome_q")
+        grouping = _required("grouping_q")
+        group_values = mapping.get("group_values")
+        if not group_values:
+            counts = {}
+            for r in answers:
+                v = _str_value(r.get(grouping))
+                if v is not None:
+                    counts[v] = counts.get(v, 0) + 1
+            # Tie-break alphabetically for deterministic ordering.
+            group_values = sorted(counts, key=lambda k: (-counts[k], k))[:6]
+        if len(group_values) < 2:
+            raise ValueError("ANOVA needs at least 2 groups")
+        if len(group_values) > 6:
+            raise ValueError("ANOVA limited to 6 groups")
+        groups: list[list[float]] = [[] for _ in group_values]
+        index = {v: i for i, v in enumerate(group_values)}
+        for r in answers:
+            label = _str_value(r.get(grouping))
+            score = _coerce_float(r.get(outcome))
+            if label is None or score is None or label not in index:
+                continue
+            groups[index[label]].append(score)
+        if any(len(g) < 2 for g in groups):
+            raise ValueError("Each group needs at least 2 valid responses")
+        return {"groups": groups}
+
+    if test_type in ("pearson", "spearman"):
+        x_key = _required("x_q")
+        y_key = _required("y_q")
+        x, y = _numeric_pairs(answers, x_key, y_key)
+        if len(x) < 3:
+            raise ValueError("Need at least 3 valid pairs")
+        return {"x": x, "y": y}
+
+    if test_type == "multiple_regression":
+        y_key = _required("y_q")
+        x_keys = mapping.get("x_qs") or []
+        if not x_keys:
+            raise ValueError("multiple_regression needs at least one predictor in x_qs")
+        # Detect predictors with zero numeric values up front so the error
+        # blames the right field instead of saying "not enough rows".
+        for k in x_keys:
+            if not any(_coerce_float(r.get(k)) is not None for r in answers):
+                raise ValueError(
+                    f"Predictor '{k}' has no numeric values; "
+                    "categorical predictors aren't supported in linear regression"
+                )
+        if not any(_coerce_float(r.get(y_key)) is not None for r in answers):
+            raise ValueError(f"Outcome '{y_key}' has no numeric values")
+        y_vals: list[float] = []
+        X: list[list[float]] = []
+        for r in answers:
+            yv = _coerce_float(r.get(y_key))
+            xv = [_coerce_float(r.get(k)) for k in x_keys]
+            if yv is None or any(v is None for v in xv):
+                continue
+            y_vals.append(yv)
+            X.append([float(v) for v in xv])  # type: ignore[arg-type]
+        if len(y_vals) < len(x_keys) + 2:
+            raise ValueError("Not enough complete rows for regression")
+        return {"y": y_vals, "X": X}
+
+    if test_type == "chi_square":
+        outcome = _required("outcome_q")  # category A (rows)
+        grouping = _required("grouping_q")  # category B (columns)
+        row_labels: list[str] = []
+        col_labels: list[str] = []
+        cells: dict[tuple[str, str], int] = {}
+        for r in answers:
+            a = _str_value(r.get(outcome))
+            b = _str_value(r.get(grouping))
+            if a is None or b is None:
+                continue
+            if a not in row_labels:
+                row_labels.append(a)
+            if b not in col_labels:
+                col_labels.append(b)
+            cells[(a, b)] = cells.get((a, b), 0) + 1
+        if len(row_labels) < 2 or len(col_labels) < 2:
+            raise ValueError("Chi-square needs at least 2 categories on each variable")
+        observed = [[cells.get((rl, cl), 0) for cl in col_labels] for rl in row_labels]
+        return {"observed": observed}
+
+    raise ValueError(f"Unknown test type: {test_type}")

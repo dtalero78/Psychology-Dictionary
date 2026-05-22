@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Alert, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { Microscope, Plus } from 'lucide-react-native';
 import { api, unwrap } from '../../../src/api/client';
 import { useAuth } from '../../../src/context/AuthContext';
 import type { Project } from '../../../src/types';
@@ -69,7 +70,9 @@ export default function DashboardScreen() {
         ListEmptyComponent={
           loading ? null : (
             <View className="items-center">
-              <Text className="text-5xl mb-4">🔬</Text>
+              <View style={{ width: 72, height: 72, borderRadius: 16, backgroundColor: 'rgba(111,81,142,0.10)', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <Microscope size={40} color="#6f518e" strokeWidth={1.6} />
+              </View>
               <Text className="font-serif text-headline-md text-ink mb-2">No projects yet</Text>
               <Muted className="text-center">Start your first research project to begin the guided design wizard.</Muted>
             </View>
@@ -104,7 +107,10 @@ export default function DashboardScreen() {
           variant="primary"
           style={{ shadowColor: '#1a2b48', shadowOpacity: 0.3, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 8 }}
         >
-          + New Project
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Plus size={18} color="#fff" strokeWidth={2.4} />
+            <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>New Project</Text>
+          </View>
         </Button>
       </View>
     </Screen>

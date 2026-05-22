@@ -4,7 +4,8 @@ from ..database import get_db
 from ..models.user import User
 from ..models.project import Project
 from ..models.analysis import Analysis
-from ..schemas.analysis import AnalysisRequest, AnalysisResult
+from ..models.survey import Survey, SurveyResponse
+from ..schemas.analysis import AnalysisRequest, AnalysisResult, FromSurveyRequest
 from ..schemas.common import ApiResponse
 from ..dependencies import get_current_user
 from ..services import stats_service, claude_service
@@ -74,6 +75,51 @@ async def run_analysis(body: AnalysisRequest, user: User = Depends(get_current_u
         project_id=body.project_id,
         test_type=body.test_type,
         input_json=body.data,
+        result_json=result,
+    )
+    db.add(record)
+    db.commit()
+    db.refresh(record)
+
+    return ApiResponse.ok(_analysis_out(record))
+
+
+@router.post("/from-survey", response_model=ApiResponse[AnalysisResult])
+async def run_analysis_from_survey(
+    body: FromSurveyRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    project = db.query(Project).filter(Project.id == body.project_id, Project.user_id == user.id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    survey = db.get(Survey, body.survey_id)
+    if not survey or survey.project_id != body.project_id:
+        raise HTTPException(status_code=404, detail="Survey not found")
+
+    responses = db.query(SurveyResponse).filter(SurveyResponse.survey_id == body.survey_id).all()
+    if len(responses) < 2:
+        raise HTTPException(status_code=400, detail="Survey needs at least 2 responses to analyze")
+
+    rows = [r.answers_json or {} for r in responses]
+    mapping = body.mapping.model_dump(exclude_none=True)
+
+    try:
+        data = stats_service.build_test_data(body.test_type, rows, mapping)
+        result = stats_service.run_analysis(body.test_type, data)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Analysis failed: {e}")
+
+    project_context = f"Title: {project.title}. Steps: {project.steps_json}"
+    interpretation = await claude_service.interpret_analysis(body.test_type, result, project_context)
+    result["interpretation_apa"] = interpretation
+
+    record = Analysis(
+        project_id=body.project_id,
+        test_type=body.test_type,
+        input_json={"survey_id": body.survey_id, "mapping": mapping, "n_responses": len(rows)},
         result_json=result,
     )
     db.add(record)

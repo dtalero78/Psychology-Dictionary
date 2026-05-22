@@ -3,11 +3,18 @@ import * as SecureStore from 'expo-secure-store';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000';
 
+// Default timeout 60s covers normal CRUD. AI-driven endpoints override per-call
+// (see `aiTimeout` below) because Claude generations can take 60-180s.
 export const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 30000,
+  timeout: 60000,
   headers: { 'Content-Type': 'application/json' },
 });
+
+// Use as: `await api.post('/documents', body, aiTimeout(180000))`
+export function aiTimeout(ms: number = 180000) {
+  return { timeout: ms };
+}
 
 api.interceptors.request.use(async (config) => {
   const token = await SecureStore.getItemAsync('access_token');

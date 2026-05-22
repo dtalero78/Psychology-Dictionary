@@ -246,11 +246,17 @@ const s = StyleSheet.create({
   },
 
   tutorCard: {
-    backgroundColor: 'rgba(111,81,142,0.05)',
+    backgroundColor: 'rgba(111,81,142,0.07)',
     borderWidth: 1,
-    borderColor: 'rgba(111,81,142,0.40)',
-    borderRadius: 8,
-    padding: 16,
+    borderColor: 'rgba(111,81,142,0.35)',
+    borderRadius: 12,
+    padding: 18,
+    // Premium purple aurora glow
+    shadowColor: '#6f518e',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.22,
+    shadowRadius: 18,
+    elevation: 6,
   },
   tutorLabel: {
     fontWeight: W.semibold,
@@ -259,7 +265,7 @@ const s = StyleSheet.create({
     letterSpacing: 0.6,
     color: C.purple,
     textTransform: 'uppercase',
-    marginBottom: 8,
+    marginBottom: 10,
   },
 
   pillBase: {
