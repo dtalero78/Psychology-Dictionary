@@ -14,12 +14,19 @@ from ..config import get_settings
 settings = get_settings()
 
 
+# Prefix every key under `psydict/` so we never collide with other apps that
+# share the same bucket (e.g. bsl-fotos hosts kbnet/, fotos/, firmas/, …).
+SPACES_PREFIX = "psydict"
+
+
 def _upload_to_spaces(data: bytes, filename: str, content_type: str) -> str:
     """Upload file to DigitalOcean Spaces and return public URL."""
+    key = f"{SPACES_PREFIX}/{filename}"
     if not settings.SPACES_KEY:
-        local_path = Path("/tmp") / filename
+        local_path = Path("/tmp") / key
+        local_path.parent.mkdir(parents=True, exist_ok=True)
         local_path.write_bytes(data)
-        return f"{settings.BASE_URL}/static/documents/{filename}"
+        return f"{settings.BASE_URL}/static/{key}"
     import boto3
     from botocore.client import Config
     s3 = boto3.client(
@@ -32,12 +39,13 @@ def _upload_to_spaces(data: bytes, filename: str, content_type: str) -> str:
     )
     s3.put_object(
         Bucket=settings.SPACES_BUCKET,
-        Key=filename,
+        Key=key,
         Body=data,
         ContentType=content_type,
         ACL="public-read",
     )
-    return f"{settings.SPACES_ENDPOINT}/{settings.SPACES_BUCKET}/{filename}"
+    # Virtual-host style: https://<bucket>.<region>.digitaloceanspaces.com/<key>
+    return f"https://{settings.SPACES_BUCKET}.{settings.SPACES_REGION}.digitaloceanspaces.com/{key}"
 
 
 def generate_pdf(content: dict[str, Any], project_id: str) -> str:

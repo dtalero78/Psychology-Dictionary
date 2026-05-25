@@ -53,18 +53,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    (async () => {
-      const token = await storage.getItem('access_token');
-      if (token) {
-        try {
-          await fetchMe();
-        } catch {
-          await storage.deleteItem('access_token');
-          await storage.deleteItem('refresh_token');
-        }
-      }
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
       setIsLoading(false);
+    };
+    // Hard cap: never leave the splash spinner stuck on a slow network or
+    // a SecureStore quirk. After 8s we let the user reach the login screen.
+    const safety = setTimeout(finish, 8000);
+    (async () => {
+      try {
+        const token = await storage.getItem('access_token');
+        console.log('[Auth] bootstrap token?', !!token);
+        if (token) {
+          try {
+            await fetchMe();
+            console.log('[Auth] /me OK');
+          } catch (e) {
+            console.log('[Auth] /me failed, clearing tokens', e);
+            try { await storage.deleteItem('access_token'); } catch {}
+            try { await storage.deleteItem('refresh_token'); } catch {}
+          }
+        }
+      } catch (e) {
+        console.log('[Auth] bootstrap error', e);
+      } finally {
+        clearTimeout(safety);
+        finish();
+      }
     })();
+    return () => clearTimeout(safety);
   }, []);
 
   async function login(email: string, password: string) {
