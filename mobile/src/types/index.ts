@@ -78,6 +78,8 @@ export interface AnalysisResult {
 export interface ApaDocument {
   id: string;
   project_id: string;
+  status: 'pending' | 'ready' | 'failed';
+  error: string | null;
   content_json: Record<string, string>;
   pdf_url: string | null;
   docx_url: string | null;

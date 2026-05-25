@@ -1,10 +1,13 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { api, aiTimeout, unwrap } from '../../../src/api/client';
+import { api, unwrap } from '../../../src/api/client';
 import { useAuth } from '../../../src/context/AuthContext';
 import type { ApaDocument } from '../../../src/types';
-import { Body, Button, H2, LabelCaps, Muted, Screen } from '../../../components/ui';
+import { Button, H2, Muted, Screen } from '../../../components/ui';
+
+const POLL_INTERVAL_MS = 4000;
+const POLL_TIMEOUT_MS = 5 * 60 * 1000; // 5 min hard cap
 
 const SECTIONS = [
   { key: 'abstract', label: 'Abstract' },
@@ -20,36 +23,82 @@ export default function DocumentScreen() {
   const { user } = useAuth();
   const [doc, setDoc] = useState<ApaDocument | null>(null);
   const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>('abstract');
+  // Polling lifecycle — kept in refs so unmount cleanup is reliable.
+  const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollDeadline = useRef<number>(0);
+
+  const stopPolling = useCallback(() => {
+    if (pollTimer.current) {
+      clearTimeout(pollTimer.current);
+      pollTimer.current = null;
+    }
+  }, []);
+
+  const pollDocument = useCallback(async (documentId: string) => {
+    try {
+      const res = await api.get(`/documents/${documentId}`);
+      const updated = unwrap<ApaDocument>(res);
+      setDoc(updated);
+      if (updated.status === 'ready') {
+        stopPolling();
+        return;
+      }
+      if (updated.status === 'failed') {
+        stopPolling();
+        Alert.alert('Generation failed', updated.error ?? 'The backend returned no detail.');
+        return;
+      }
+      if (Date.now() > pollDeadline.current) {
+        stopPolling();
+        Alert.alert('Still working', 'The report is taking longer than expected. Check back in a minute.');
+        return;
+      }
+      pollTimer.current = setTimeout(() => pollDocument(documentId), POLL_INTERVAL_MS);
+    } catch (e: any) {
+      stopPolling();
+      Alert.alert('Polling error', e?.response?.data?.error ?? e?.response?.data?.detail ?? e.message);
+    }
+  }, [stopPolling]);
 
   const fetchLatest = useCallback(async () => {
     try {
       const res = await api.get(`/documents/by-project/${projectId}`);
       const docs = unwrap<ApaDocument[]>(res);
-      setDoc(docs[0] ?? null);
+      const latest = docs[0] ?? null;
+      setDoc(latest);
+      // If the user comes back while a previous generation is still pending,
+      // resume polling so the UI catches up automatically.
+      if (latest && latest.status === 'pending') {
+        pollDeadline.current = Date.now() + POLL_TIMEOUT_MS;
+        pollTimer.current = setTimeout(() => pollDocument(latest.id), POLL_INTERVAL_MS);
+      }
     } catch (e: any) {
       Alert.alert('Error', e?.response?.data?.error ?? e.message);
     } finally {
       setLoading(false);
     }
-  }, [projectId]);
+  }, [projectId, pollDocument]);
 
   useEffect(() => {
     fetchLatest();
-  }, [fetchLatest]);
+    return () => stopPolling();
+  }, [fetchLatest, stopPolling]);
 
   async function generate() {
-    setGenerating(true);
+    stopPolling();
     try {
-      const res = await api.post('/documents', { project_id: projectId }, aiTimeout(180000));
-      setDoc(unwrap<ApaDocument>(res));
+      const res = await api.post('/documents', { project_id: projectId });
+      const created = unwrap<ApaDocument>(res);
+      setDoc(created);
+      pollDeadline.current = Date.now() + POLL_TIMEOUT_MS;
+      pollTimer.current = setTimeout(() => pollDocument(created.id), POLL_INTERVAL_MS);
     } catch (e: any) {
       Alert.alert('Generation failed', e?.response?.data?.error ?? e?.response?.data?.detail ?? e.message);
-    } finally {
-      setGenerating(false);
     }
   }
+
+  const generating = doc?.status === 'pending';
 
   async function openPdf() {
     if (!doc?.pdf_url) return;
@@ -93,17 +142,27 @@ export default function DocumentScreen() {
         </View>
       ) : (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 16 }}>
-          <Button onPress={generate} loading={generating} variant="success">
-            ✦ {doc ? 'Regenerate Report' : 'Generate APA Report'}
+          <Button onPress={generate} loading={generating} variant="success" disabled={generating}>
+            ✦ {generating ? 'Generating…' : doc?.status === 'ready' ? 'Regenerate Report' : 'Generate APA Report'}
           </Button>
 
           {generating && (
-            <Muted className="italic text-center text-label-sm">
-              This may take 30–60 seconds. Claude is writing all sections in APA 7th edition format.
-            </Muted>
+            <View className="items-center gap-2 py-2">
+              <ActivityIndicator color="#6f518e" size="small" />
+              <Muted className="italic text-center text-label-sm">
+                Claude is writing all sections in APA 7th edition format. This usually takes 60–120 seconds — you can leave this screen and come back.
+              </Muted>
+            </View>
           )}
 
-          {doc && (
+          {doc?.status === 'failed' && (
+            <View className="bg-red-50 border border-red-200 rounded p-3">
+              <Text className="font-sans-semibold text-red-700">Last attempt failed</Text>
+              <Text className="text-red-700 text-label-sm mt-1">{doc.error ?? 'Unknown error'}</Text>
+            </View>
+          )}
+
+          {doc?.status === 'ready' && (
             <>
               <View className="flex-row gap-2.5">
                 <Pressable onPress={openPdf} className="flex-1 bg-navy-deep rounded py-3 items-center active:bg-navy">
@@ -151,7 +210,7 @@ export default function DocumentScreen() {
             </>
           )}
 
-          {!doc && !generating && (
+          {!doc && (
             <View className="items-center py-10">
               <Text className="text-5xl mb-4">📄</Text>
               <H2 className="mb-2">No report yet</H2>

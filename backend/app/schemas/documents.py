@@ -9,6 +9,8 @@ class DocumentRequest(BaseModel):
 class DocumentOut(BaseModel):
     id: str
     project_id: str
+    status: str  # pending | ready | failed
+    error: str | None = None
     content_json: dict[str, Any]
     pdf_url: str | None
     docx_url: str | None

@@ -15,8 +15,11 @@ def load_prompt(filename: str) -> str:
     return (PROMPTS_DIR / filename).read_text(encoding="utf-8")
 
 
-def get_client() -> anthropic.Anthropic:
-    return anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+def get_client() -> anthropic.AsyncAnthropic:
+    # Async client: keeps the FastAPI event loop free while Claude generates,
+    # so other requests (and the /documents polling) can still be served by
+    # the single-worker uvicorn we run on App Platform.
+    return anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
 
 
 async def run_step(step_number: int, user_message: str, prior_steps: dict) -> str:
@@ -48,7 +51,7 @@ async def run_step(step_number: int, user_message: str, prior_steps: dict) -> st
         full_user_message = f"PRIOR RESEARCH CONTEXT:\n{prior_context}\n\nCURRENT INPUT:\n{user_message}"
 
     client = get_client()
-    message = client.messages.create(
+    message = await client.messages.create(
         model=MODEL,
         max_tokens=2048,
         system=[
@@ -80,7 +83,7 @@ async def interpret_analysis(test_type: str, result_json: dict, project_context:
     )
 
     client = get_client()
-    message = client.messages.create(
+    message = await client.messages.create(
         model=MODEL,
         max_tokens=1024,
         system=[
@@ -109,7 +112,7 @@ async def generate_apa_document(project_data: dict) -> dict:
     user_message = f"PROJECT DATA:\n{json.dumps(project_data, indent=2)}"
 
     client = get_client()
-    message = client.messages.create(
+    message = await client.messages.create(
         model=MODEL,
         max_tokens=4096,
         system=[
