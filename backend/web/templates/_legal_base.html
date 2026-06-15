@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>{{ title }} — Psychology Dictionary Lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23f3efe4'/%3E%3Ctext x='8' y='12' font-family='Georgia,serif' font-size='12' font-style='italic' text-anchor='middle' fill='%2314161d'%3E%CE%A8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #191c1d;
+    --ink-muted: #5b5d63;
+    --ink-soft: #75777e;
+    --paper: #fafaf7;
+    --card: #ffffff;
+    --rule: #e6e3da;
+    --navy: #1a2b48;
+    --purple: #6f518e;
+    --gold: #c4a77d;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --sans: "Inter", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font: 400 17px/1.65 var(--sans);
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .nav {
+    background: var(--card);
+    border-bottom: 1px solid var(--rule);
+    padding: 20px 24px;
+  }
+  .nav-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .brand {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: -0.3px;
+    text-decoration: none;
+  }
+  .brand em { color: var(--purple); font-style: italic; }
+  .brand-tag {
+    font-size: 12px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+  .kicker {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--purple);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: -0.8px;
+    color: var(--navy);
+    line-height: 1.1;
+    margin: 0 0 8px;
+  }
+  .updated {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 40px;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--navy);
+    line-height: 1.2;
+    margin: 40px 0 12px;
+  }
+  h3 {
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-muted);
+    margin: 28px 0 8px;
+  }
+  p { margin: 0 0 14px; color: var(--ink); }
+  ul, ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  strong { font-weight: 600; color: var(--navy); }
+  a { color: var(--purple); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { color: var(--navy); }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 40px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 15px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  th {
+    background: #f3f1ea;
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .footer {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px;
+    border-top: 1px solid var(--rule);
+    font-size: 13px;
+    color: var(--ink-soft);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .footer a { color: var(--ink-muted); text-decoration: none; }
+  .footer a:hover { color: var(--navy); }
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="/">Psychology <em>Dictionary</em> Lab</a>
+    <span class="brand-tag">Research, redesigned.</span>
+  </div>
+</header>
+
+<main>
+  <div class="kicker">{{ kicker }}</div>
+  <h1>{{ title }}</h1>
+  <p class="updated">Last updated: {{ updated }}</p>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <span>© {{ year }} Psychology Dictionary Lab</span>
+  <a href="/privacy">Privacy</a>
+  <a href="/terms">Terms</a>
+  <a href="/support">Support</a>
+  <span style="margin-left:auto;">api.psychologydictionary.app</span>
+</footer>
+</body>
+</html>

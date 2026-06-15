@@ -25,6 +25,47 @@ limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(tags=["public"])
 
 
+# --- Legal / info pages (linked from App Store listing + survey footers) ---
+# Kept here (public router) because they don't require auth and reuse the
+# same Jinja templates infrastructure as the survey page.
+
+_LEGAL_UPDATED = "June 15, 2026"
+
+
+def _legal_ctx(request: Request, title: str, kicker: str) -> dict:
+    return {
+        "request": request,
+        "title": title,
+        "kicker": kicker,
+        "updated": _LEGAL_UPDATED,
+        "year": 2026,
+    }
+
+
+@router.get("/privacy", response_class=HTMLResponse)
+def privacy_policy(request: Request):
+    return templates.TemplateResponse(
+        "privacy.html",
+        _legal_ctx(request, title="Privacy Policy", kicker="Privacy"),
+    )
+
+
+@router.get("/terms", response_class=HTMLResponse)
+def terms_of_service(request: Request):
+    return templates.TemplateResponse(
+        "terms.html",
+        _legal_ctx(request, title="Terms of Service", kicker="Terms"),
+    )
+
+
+@router.get("/support", response_class=HTMLResponse)
+def support_page(request: Request):
+    return templates.TemplateResponse(
+        "support.html",
+        _legal_ctx(request, title="Support", kicker="Help"),
+    )
+
+
 @router.get("/s/{token}", response_class=HTMLResponse)
 def survey_page(token: str, request: Request, db: Session = Depends(get_db)):
     survey = db.query(Survey).filter(Survey.token == token).first()

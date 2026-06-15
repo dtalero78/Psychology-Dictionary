@@ -1,0 +1,110 @@
+{% extends "_legal_base.html" %}
+{% block content %}
+
+<p>Psychology Dictionary Lab ("we", "us", "the App") helps psychology students and researchers design rigorous studies, collect survey responses, and generate APA-formatted papers. This Privacy Policy explains what data we collect, how we use it, and the choices you have. We designed the app to collect as little personal data as possible.</p>
+
+<h2>1. The short version</h2>
+<ul>
+  <li><strong>We collect:</strong> your email address (or Apple ID), the research project content you create, your survey configurations, your in-app purchase status, and limited diagnostic data needed to keep the service running.</li>
+  <li><strong>We do NOT collect:</strong> survey participant names, emails, location, contacts, photos, advertising identifiers, or browsing history. We do not run third-party analytics or advertising trackers.</li>
+  <li><strong>Survey participants stay anonymous</strong> by default: only a one-way hash of the IP address is stored for fraud prevention and rate limiting.</li>
+  <li><strong>We never sell</strong> your data, your project content, or your participants' responses to anyone.</li>
+</ul>
+
+<h2>2. Information we collect</h2>
+
+<h3>2.1 Account information (you)</h3>
+<ul>
+  <li><strong>Email address</strong> — when you register, or your private-relay email from Sign in with Apple. Used as your login identifier and for transactional messages (password reset, billing).</li>
+  <li><strong>Password</strong> — stored only as a bcrypt hash; we cannot recover or read it.</li>
+  <li><strong>Apple user identifier (apple_sub)</strong> — if you sign in with Apple, we store the opaque identifier Apple assigns; we do not receive your name unless you grant it.</li>
+  <li><strong>Plan</strong> — whether you are on the free tier or a Pro subscription.</li>
+</ul>
+
+<h3>2.2 Research content (you)</h3>
+<p>Everything you enter in the eight-step research wizard — research question, variables, hypothesis, sample plan, methods, instruments, analysis plan, ethical considerations — is stored under your account. Same for the surveys you create, the statistical analyses you run, and the APA documents you generate.</p>
+
+<h3>2.3 Survey participant data (your respondents)</h3>
+<p>When someone responds to a survey you've shared, we store:</p>
+<ul>
+  <li>Their answers as you defined them in the survey configuration.</li>
+  <li>The timestamp of submission.</li>
+  <li>A SHA-256 hash of the responding IP address, used to throttle abuse and prevent duplicate submissions. The hash is one-way; we cannot recover the original IP from it.</li>
+</ul>
+<p>We never collect a participant's name, email, location, device identifier, or any other personally identifying information unless YOU explicitly add a question for it in your survey. If you do, you become responsible for handling that information under your institutional IRB and applicable law.</p>
+
+<h3>2.4 Subscription &amp; payment</h3>
+<p>If you upgrade to Pro, the payment itself is processed by Apple. We never see your credit card or Apple ID password. We receive a subscription receipt confirmation from RevenueCat (our subscription service provider) including your subscription status and expiration date. See RevenueCat's privacy policy at <a href="https://www.revenuecat.com/privacy" target="_blank" rel="noopener">revenuecat.com/privacy</a>.</p>
+
+<h3>2.5 Push notifications (optional)</h3>
+<p>If you grant notification permission, we store your Apple Push Notification (APNs) device token to send you alerts when your surveys receive new responses. You can revoke this at any time in iOS Settings → Psychology Dictionary Lab → Notifications.</p>
+
+<h3>2.6 Diagnostic data</h3>
+<p>To keep the service running we record minimal server logs (timestamps, HTTP status codes, response times). These logs do not contain your password, your account email, or survey participant content. Logs are retained for 30 days.</p>
+
+<h2>3. How we use this information</h2>
+<table>
+  <tr><th>Purpose</th><th>Legal basis</th></tr>
+  <tr><td>Provide the research wizard, statistical analysis, and APA generation features</td><td>Performance of contract</td></tr>
+  <tr><td>Authenticate you on each login and on token refresh</td><td>Performance of contract</td></tr>
+  <tr><td>Verify your Pro subscription status with RevenueCat</td><td>Performance of contract</td></tr>
+  <tr><td>Send push notifications when your surveys receive new responses</td><td>Your consent (revocable in iOS Settings)</td></tr>
+  <tr><td>Prevent abuse of public survey URLs (rate limiting via IP hash)</td><td>Legitimate interest in service security</td></tr>
+  <tr><td>Respond to support requests you initiate</td><td>Performance of contract</td></tr>
+</table>
+
+<h2>4. AI processing of your content</h2>
+<p>When you ask the app for guided suggestions (in the research wizard), or for an APA interpretation of a statistical result, or to generate a full APA paper, the relevant portion of your research project is sent to <strong>Anthropic</strong> for processing by their Claude language model. Anthropic processes the request, returns the output to our server, and does not retain or train on your data under our enterprise agreement. See Anthropic's commercial terms at <a href="https://www.anthropic.com/legal/commercial-terms" target="_blank" rel="noopener">anthropic.com/legal/commercial-terms</a>.</p>
+<p>Survey participants' raw responses are never sent to any AI service; statistical analyses run locally on our server using scipy / statsmodels, and only the AGGREGATE result (statistic, p-value, effect size) is forwarded to Claude for the APA paragraph.</p>
+
+<h2>5. Data sharing</h2>
+<p>We share the minimum data necessary with the following service providers, each bound by their own privacy and security obligations:</p>
+<ul>
+  <li><strong>DigitalOcean</strong> — hosting (App Platform + managed Postgres + Spaces object storage). Data stays in the United States (NYC3 region).</li>
+  <li><strong>Anthropic</strong> — AI processing of wizard prompts and APA generation (see Section 4).</li>
+  <li><strong>RevenueCat</strong> — subscription status verification.</li>
+  <li><strong>Apple Push Notification service</strong> — delivery of survey-response notifications.</li>
+</ul>
+<p>We do not sell, rent, or share your data with advertisers or data brokers. We have no third-party analytics SDKs in the app.</p>
+
+<h2>6. Data retention</h2>
+<ul>
+  <li><strong>Account, projects, surveys, responses, analyses, APA documents</strong> — retained as long as your account is active. Deleting your account (Settings → Delete Account in the app) removes all of it within 30 days, except where law requires otherwise.</li>
+  <li><strong>Subscription records</strong> — retained for 7 years after the subscription ends for tax / audit purposes.</li>
+  <li><strong>Server logs</strong> — 30 days, then rotated.</li>
+</ul>
+
+<h2>7. Your rights</h2>
+<p>Depending on where you live, you have some or all of the following rights:</p>
+<ul>
+  <li><strong>Access</strong> — request a copy of the data we hold about you.</li>
+  <li><strong>Rectification</strong> — correct inaccurate data.</li>
+  <li><strong>Deletion</strong> — delete your account and the data above; you can do this yourself in Settings.</li>
+  <li><strong>Portability</strong> — receive your data in a structured format.</li>
+  <li><strong>Objection / restriction</strong> — limit how we process your data.</li>
+  <li><strong>Withdraw consent</strong> — revoke push notification permission in iOS Settings.</li>
+</ul>
+<p>To exercise any of these rights, email <a href="mailto:support@psychologydictionary.app">support@psychologydictionary.app</a>. We will respond within 30 days.</p>
+
+<h2>8. Security</h2>
+<ul>
+  <li>All traffic between the app and our servers is encrypted with TLS 1.2+.</li>
+  <li>Passwords are stored only as bcrypt hashes; we cannot read or recover them.</li>
+  <li>Authentication tokens are stored on your device in iOS Secure Enclave–backed Keychain.</li>
+  <li>Survey participant IP addresses are hashed before storage; the raw IP is never written to disk.</li>
+  <li>Our infrastructure is hosted on DigitalOcean's managed services, with database backups and at-rest encryption.</li>
+</ul>
+
+<h2>9. Children</h2>
+<p>Psychology Dictionary Lab is intended for psychology students and researchers aged 17 and older. The app is not directed to children under 13, and we do not knowingly collect data from them. If you believe a child has provided data to us, contact <a href="mailto:support@psychologydictionary.app">support@psychologydictionary.app</a> and we will delete it.</p>
+
+<h2>10. International transfers</h2>
+<p>Our servers are located in the United States. If you access the app from outside the US, your data will be transferred to and processed in the US. By using the app you consent to this transfer.</p>
+
+<h2>11. Changes to this policy</h2>
+<p>We may update this policy as the app evolves. We will post the new version here and update the "Last updated" date. Material changes will be communicated in-app or by email.</p>
+
+<h2>12. Contact</h2>
+<p>Questions? Email <a href="mailto:support@psychologydictionary.app">support@psychologydictionary.app</a>. We answer everything personally.</p>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "_legal_base.html" %}
+{% block content %}
+
+<p>Need help with Psychology Dictionary Lab? Most questions are answered below. If you don't find what you need, email us — we answer every message personally.</p>
+
+<h2>Frequently asked questions</h2>
+
+<h3>How do the eight wizard steps work?</h3>
+<p>The wizard guides you through the canonical phases of a psychology research design: <strong>topic, variables, hypothesis, sample, method, instruments, analysis,</strong> and <strong>ethics</strong>. At each step the app offers AI-generated suggestions; you can edit them freely or pick one of the proposed options. You can move backward and forward between steps at any time.</p>
+
+<h3>Where are my survey responses stored?</h3>
+<p>Responses are stored on our managed Postgres database (DigitalOcean, US-East). Each response is associated with the survey, not with the participant. Only a hashed IP (one-way SHA-256) is recorded for rate limiting; we never store the raw IP, the participant's name, or their email unless YOU explicitly add a question that asks for it. See our <a href="/privacy">Privacy Policy</a> for the full data inventory.</p>
+
+<h3>How accurate are the statistical analyses?</h3>
+<p>The numerical results (t, p, F, χ², r, R², effect sizes, confidence intervals) are computed server-side using scipy and statsmodels — the same libraries used in academic publications. The APA interpretation paragraph that accompanies each result is written by Claude based on the statistical output, and should always be reviewed before submission as academic work.</p>
+
+<h3>Can I export my APA paper?</h3>
+<p>Yes. Every account can export the generated APA document as a <strong>PDF</strong>. Pro accounts can additionally export as <strong>Microsoft Word (.docx)</strong>.</p>
+
+<h3>What's included in Pro?</h3>
+<ul>
+  <li>Unlimited research projects (free is limited to one).</li>
+  <li>Unlimited responses per survey (free is limited to 50).</li>
+  <li>Microsoft Word (.docx) export.</li>
+  <li>Priority email support.</li>
+</ul>
+<p>Pro costs USD $79.99 per year, billed annually through your Apple ID.</p>
+
+<h3>How do I cancel my Pro subscription?</h3>
+<p>Open the iOS Settings app → tap your name → Subscriptions → Psychology Dictionary Lab Pro → Cancel Subscription. Your Pro access continues through the end of the current billing period.</p>
+
+<h3>How do I delete my account?</h3>
+<p>In the app, go to Settings → Delete Account. This removes your projects, surveys, responses, analyses, and APA documents within 30 days. The action is irreversible.</p>
+
+<h3>Why does Apple Sign In not work in Expo Go?</h3>
+<p>Apple Sign In requires a real App Store bundle identifier, which Expo Go does not provide. In the public App Store build of Psychology Dictionary Lab, Apple Sign In works normally. If you're testing through TestFlight, use a regular email/password account.</p>
+
+<h3>I'm not receiving push notifications when my survey gets a response.</h3>
+<p>Check that you granted notification permission for Psychology Dictionary Lab in iOS Settings → Notifications. Notifications are sent in near real-time after each new response; if Apple's push servers are slow, the in-app counter still updates the next time you open the survey.</p>
+
+<h3>I think the AI generated something wrong. What do I do?</h3>
+<p>Tap "Edit this step" or "Edit freely" to modify any AI-generated content. You can always rewrite, replace, or remove anything the wizard or APA generator produces. The final research design is yours.</p>
+
+<h2>Contact us</h2>
+<p>For anything else, email <a href="mailto:support@psychologydictionary.app">support@psychologydictionary.app</a>. We typically respond within 1 business day. For Pro subscribers, within 4 hours during weekday business hours (US Eastern time).</p>
+
+<h2>Bug reports &amp; feature requests</h2>
+<p>Spotted a bug or have an idea? We genuinely want to hear it. Email <a href="mailto:support@psychologydictionary.app">support@psychologydictionary.app</a> with the iOS version, app build number, and a short description. Screenshots help.</p>
+
+{% endblock %}
