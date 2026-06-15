@@ -35,12 +35,25 @@ services:
         value: F8YFJ2J4T2
       - key: APNS_TEAM_ID
         value: F8YFJ2J4T2
+      # Shared bucket with other apps. Always namespaced under `psydict/`
+      # inside the bucket (see backend/app/services/document_service.py).
+      # If you ever change this, also rotate the SPACES_KEY/SPACES_SECRET
+      # scopes so they match the new bucket.
       - key: SPACES_BUCKET
-        value: psydict-documents
+        value: bsl-fotos
       - key: SPACES_REGION
         value: nyc3
       - key: SPACES_ENDPOINT
         value: https://nyc3.digitaloceanspaces.com
+      - key: SPACES_KEY
+        value: REPLACE_ME
+        type: SECRET
+      - key: SPACES_SECRET
+        value: REPLACE_ME
+        type: SECRET
+      - key: REVENUECAT_WEBHOOK_SECRET
+        value: REPLACE_ME
+        type: SECRET
       - key: SECRET_KEY
         value: REPLACE_ME
         type: SECRET

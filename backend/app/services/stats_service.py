@@ -30,12 +30,21 @@ def _effect_label(d: float, metric: str = "d") -> str:
 
 
 def run_independent_ttest(group1: list[float], group2: list[float]) -> dict[str, Any]:
-    t, p = scipy_stats.ttest_ind(group1, group2)
+    # Use Welch's t-test (equal_var=False) and a Welch–Satterthwaite df so the
+    # t-statistic, p-value, df and 95% CI all derive from the SAME variance
+    # model. The previous implementation mixed Student's t (pooled) with a
+    # Welch standard error, producing CI that didn't match the reported t.
+    t, p = scipy_stats.ttest_ind(group1, group2, equal_var=False)
     d = _cohens_d(group1, group2)
     n1, n2 = len(group1), len(group2)
-    df = n1 + n2 - 2
+    v1 = float(np.var(group1, ddof=1))
+    v2 = float(np.var(group2, ddof=1))
+    se = float(np.sqrt(v1 / n1 + v2 / n2))
+    # Welch–Satterthwaite degrees of freedom
+    numerator = (v1 / n1 + v2 / n2) ** 2
+    denominator = ((v1 / n1) ** 2) / (n1 - 1) + ((v2 / n2) ** 2) / (n2 - 1) if (n1 > 1 and n2 > 1) else 0
+    df = float(numerator / denominator) if denominator > 0 else float(n1 + n2 - 2)
     mean_diff = float(np.mean(group1) - np.mean(group2))
-    se = float(np.sqrt(np.var(group1, ddof=1) / n1 + np.var(group2, ddof=1) / n2))
     ci = scipy_stats.t.interval(0.95, df=df, loc=mean_diff, scale=se)
     return {
         "statistic": float(t),
@@ -45,6 +54,7 @@ def run_independent_ttest(group1: list[float], group2: list[float]) -> dict[str,
         "ci_95": [float(ci[0]), float(ci[1])],
         "df": df,
         "mean_difference": mean_diff,
+        "test_type": "welch",
     }
 
 

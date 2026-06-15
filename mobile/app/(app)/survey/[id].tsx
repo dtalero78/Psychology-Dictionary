@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import { ActivityIndicator, Alert, Clipboard, Pressable, ScrollView, Share, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, Share, Text, View } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, router } from 'expo-router';
 import QRCode from 'react-native-qrcode-svg';
 import { api, unwrap } from '../../../src/api/client';
@@ -34,7 +35,7 @@ export default function SurveyDetailScreen() {
 
   async function copyLink() {
     if (!survey) return;
-    Clipboard.setString(survey.survey_url);
+    await Clipboard.setStringAsync(survey.survey_url);
     Alert.alert('Copied', 'Survey link copied to clipboard.');
   }
 

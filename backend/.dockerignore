@@ -1,0 +1,29 @@
+# Secrets — must NEVER bake into image layers.
+.env
+.env.*
+*.p8
+*.pem
+secrets/
+
+# Local virtualenv
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Git + tooling
+.git/
+.gitignore
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Tests / docs not needed at runtime
+tests/
+*.md
+docker-compose*.yml

@@ -43,17 +43,17 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect().execution_options(isolation_level="AUTOCOMMIT") as setup_conn:
-        # If psydict.users exists but lacks apple_sub the initial migration ran
-        # in the wrong schema (public). Drop psydict so alembic re-runs clean.
-        has_apple_sub = setup_conn.execute(text("""
-            SELECT COUNT(*) FROM information_schema.columns
-            WHERE table_schema = 'psydict'
-              AND table_name   = 'users'
-              AND column_name  = 'apple_sub'
-        """)).scalar()
-
-        if not has_apple_sub:
-            print("[migrate] psydict schema is missing or incomplete — rebuilding")
+        # Ensure the schema exists; alembic versioning then takes over.
+        #
+        # NOTE: This used to also DROP SCHEMA psydict CASCADE when an early-
+        # deploy column check failed, which silently destroyed every row in
+        # users/projects/surveys/responses/analyses/apa_documents/etc on a
+        # legitimately-stale boot. That recovery path is now gated behind an
+        # explicit env var (ALEMBIC_NUKE_PSYDICT=1) so it can never fire
+        # automatically in production. Use it only as a one-time recovery on a
+        # fresh dev DB.
+        if os.getenv("ALEMBIC_NUKE_PSYDICT") == "1":
+            print("[migrate] ALEMBIC_NUKE_PSYDICT=1 — dropping psydict schema (DESTRUCTIVE)")
             setup_conn.execute(text("DROP SCHEMA IF EXISTS psydict CASCADE"))
 
         setup_conn.execute(text("CREATE SCHEMA IF NOT EXISTS psydict"))

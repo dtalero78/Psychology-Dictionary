@@ -16,3 +16,7 @@
 
 # OS
 .DS_Store
+
+# Audit / review artifacts (multi-agent dumps)
+.audit-report.md
+.claude/

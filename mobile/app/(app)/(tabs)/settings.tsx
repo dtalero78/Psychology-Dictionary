@@ -53,7 +53,9 @@ export default function SettingsScreen() {
       const { customerInfo } = await Purchases.purchasePackage(pkg);
       const isActive = !!customerInfo.entitlements.active['pro'];
       if (isActive) {
-        await api.post('/subscriptions/verify', { rc_customer_id: user!.id, product_id: PRODUCT_ID });
+        // Backend uses the authenticated user's id as RevenueCat's appUserID,
+// so we don't (and can't) pass rc_customer_id here.
+await api.post('/subscriptions/verify', { product_id: PRODUCT_ID });
         await refreshUser();
         await fetchStatus();
         Alert.alert('Welcome to Pro!', 'Your subscription is now active. Enjoy unlimited projects and all features.');
@@ -73,7 +75,9 @@ export default function SettingsScreen() {
       const customerInfo = await Purchases.restorePurchases();
       const isActive = !!customerInfo.entitlements.active['pro'];
       if (isActive) {
-        await api.post('/subscriptions/verify', { rc_customer_id: user!.id, product_id: PRODUCT_ID });
+        // Backend uses the authenticated user's id as RevenueCat's appUserID,
+// so we don't (and can't) pass rc_customer_id here.
+await api.post('/subscriptions/verify', { product_id: PRODUCT_ID });
         await refreshUser();
         await fetchStatus();
         Alert.alert('Restored!', 'Your Pro subscription has been restored.');

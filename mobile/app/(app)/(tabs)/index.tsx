@@ -1,17 +1,23 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Alert, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, RefreshControl, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { Microscope, Plus } from 'lucide-react-native';
 import { api, unwrap } from '../../../src/api/client';
 import { useAuth } from '../../../src/context/AuthContext';
 import type { Project } from '../../../src/types';
 import { Body, Button, Card, H1, LabelCaps, Muted, Pill, Screen } from '../../../components/ui';
+import { SheetModal } from '../../../components/SheetModal';
 
 export default function DashboardScreen() {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  // SheetModal-based "New Project" prompt. Replaces Alert.prompt (iOS-only,
+  // crashes on Android) and gives us validation + length cap.
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createTitle, setCreateTitle] = useState('');
+  const [createBusy, setCreateBusy] = useState(false);
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -29,17 +35,25 @@ export default function DashboardScreen() {
     fetchProjects();
   }, [fetchProjects]);
 
-  async function createProject() {
-    Alert.prompt('New Research Project', 'Enter a title for your project:', async (title) => {
-      if (!title?.trim()) return;
-      try {
-        const res = await api.post('/projects', { title: title.trim() });
-        const project = unwrap<Project>(res);
-        router.push(`/(app)/project/${project.id}`);
-      } catch (e: any) {
-        Alert.alert('Error', e?.response?.data?.error ?? e.message);
-      }
-    });
+  function openCreate() {
+    setCreateTitle('');
+    setCreateOpen(true);
+  }
+
+  async function submitCreate() {
+    const title = createTitle.trim();
+    if (!title) return;
+    setCreateBusy(true);
+    try {
+      const res = await api.post('/projects', { title });
+      const project = unwrap<Project>(res);
+      setCreateOpen(false);
+      router.push(`/(app)/project/${project.id}`);
+    } catch (e: any) {
+      Alert.alert('Error', e?.response?.data?.error ?? e.message);
+    } finally {
+      setCreateBusy(false);
+    }
   }
 
   const isPro = user?.plan === 'pro';
@@ -103,7 +117,7 @@ export default function DashboardScreen() {
 
       <View className="absolute bottom-6 left-5 right-5">
         <Button
-          onPress={createProject}
+          onPress={openCreate}
           variant="primary"
           style={{ shadowColor: '#1a2b48', shadowOpacity: 0.3, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 8 }}
         >
@@ -113,6 +127,50 @@ export default function DashboardScreen() {
           </View>
         </Button>
       </View>
+
+      <SheetModal
+        open={createOpen}
+        onClose={() => (createBusy ? undefined : setCreateOpen(false))}
+        title="New Research Project"
+        subtitle="Enter a working title — you can refine it later."
+        footer={
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <Button onPress={() => setCreateOpen(false)} variant="ghost" style={{ flex: 1 }}>
+              <Text style={{ color: '#1a2b48', fontSize: 16, fontWeight: '600' }}>Cancel</Text>
+            </Button>
+            <Button
+              onPress={submitCreate}
+              variant="primary"
+              loading={createBusy}
+              disabled={!createTitle.trim()}
+              style={{ flex: 1 }}
+            >
+              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Create</Text>
+            </Button>
+          </View>
+        }
+      >
+        <TextInput
+          value={createTitle}
+          onChangeText={setCreateTitle}
+          placeholder="e.g. Stress and academic performance in undergraduates"
+          placeholderTextColor="#75777e"
+          autoFocus
+          maxLength={120}
+          returnKeyType="done"
+          onSubmitEditing={submitCreate}
+          style={{
+            borderWidth: 1,
+            borderColor: '#c5c6ce',
+            borderRadius: 10,
+            paddingHorizontal: 12,
+            paddingVertical: 12,
+            fontSize: 16,
+            color: '#191c1d',
+            backgroundColor: '#fff',
+          }}
+        />
+      </SheetModal>
     </Screen>
   );
 }

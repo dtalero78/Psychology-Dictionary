@@ -6,7 +6,10 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     DATABASE_URL: str = "postgresql://psydict:psydict_dev@localhost:5432/psydict_db"
-    SECRET_KEY: str = "change-me"
+    # Default left intentionally weak so local dev with no .env still boots.
+    # Production *must* override via env var; `_validate_secret_key()` raises
+    # at startup if the default leaks into a deployed environment.
+    SECRET_KEY: str = "change-me-local-only-NEVER-USE-IN-PRODUCTION"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 10080
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
@@ -23,6 +26,9 @@ class Settings(BaseSettings):
     APNS_USE_SANDBOX: bool = True
 
     REVENUECAT_API_KEY: str = ""
+    # Shared secret you put in RC dashboard → Webhooks → Authorization header.
+    # When unset, /subscriptions/webhook refuses every request.
+    REVENUECAT_WEBHOOK_SECRET: str = ""
 
     SPACES_KEY: str = ""
     SPACES_SECRET: str = ""
@@ -43,6 +49,34 @@ class Settings(BaseSettings):
         return self.ENVIRONMENT == "production"
 
 
+_WEAK_SECRETS = {
+    "change-me",
+    "change-me-local-only-NEVER-USE-IN-PRODUCTION",
+    "secret",
+    "supersecret",
+    "",
+}
+
+
+def _validate(s: Settings) -> Settings:
+    """Hard-fail when prod boots with a weak or default SECRET_KEY.
+
+    Tokens are HS256-signed with SECRET_KEY; a leaked/known value lets anyone
+    forge JWTs for any user. We refuse to start rather than serve forgeable
+    auth.
+    """
+    if s.is_production:
+        if s.SECRET_KEY in _WEAK_SECRETS or len(s.SECRET_KEY) < 32:
+            raise RuntimeError(
+                "SECRET_KEY is missing, default, or too short for production. "
+                "Set ENVIRONMENT=development for local work, or provide a "
+                ">=32-char random SECRET_KEY env var in production."
+            )
+        if not s.ANTHROPIC_API_KEY:
+            raise RuntimeError("ANTHROPIC_API_KEY is required in production.")
+    return s
+
+
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    return _validate(Settings())
