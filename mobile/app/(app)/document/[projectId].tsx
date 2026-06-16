@@ -5,6 +5,8 @@ import { api, unwrap } from '../../../src/api/client';
 import { useAuth } from '../../../src/context/AuthContext';
 import type { ApaDocument } from '../../../src/types';
 import { Button, H2, Muted, Screen } from '../../../components/ui';
+import { AIConsentModal } from '../../../components/AIConsentModal';
+import { AIWarningBanner } from '../../../components/AIWarningBanner';
 
 const POLL_INTERVAL_MS = 4000;
 const POLL_TIMEOUT_MS = 5 * 60 * 1000; // 5 min hard cap
@@ -20,10 +22,11 @@ const SECTIONS = [
 
 export default function DocumentScreen() {
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
-  const { user } = useAuth();
+  const { user, hasAiConsent } = useAuth();
   const [doc, setDoc] = useState<ApaDocument | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedSection, setExpandedSection] = useState<string | null>('abstract');
+  const [consentOpen, setConsentOpen] = useState(false);
   // Polling lifecycle — kept in refs so unmount cleanup is reliable.
   const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollDeadline = useRef<number>(0);
@@ -86,6 +89,7 @@ export default function DocumentScreen() {
   }, [fetchLatest, stopPolling]);
 
   async function generate() {
+    if (!hasAiConsent) { setConsentOpen(true); return; }
     stopPolling();
     try {
       const res = await api.post('/documents', { project_id: projectId });
@@ -94,6 +98,10 @@ export default function DocumentScreen() {
       pollDeadline.current = Date.now() + POLL_TIMEOUT_MS;
       pollTimer.current = setTimeout(() => pollDocument(created.id), POLL_INTERVAL_MS);
     } catch (e: any) {
+      if (e?.response?.status === 403 && e?.response?.data?.detail === 'AI_CONSENT_REQUIRED') {
+        setConsentOpen(true);
+        return;
+      }
       Alert.alert('Generation failed', e?.response?.data?.error ?? e?.response?.data?.detail ?? e.message);
     }
   }
@@ -164,6 +172,7 @@ export default function DocumentScreen() {
 
           {doc?.status === 'ready' && (
             <>
+              <AIWarningBanner text="AI-generated APA draft. Review and edit before submitting as your own work." />
               <View className="flex-row gap-2.5">
                 <Pressable onPress={openPdf} className="flex-1 bg-navy-deep rounded py-3 items-center active:bg-navy">
                   <Text className="font-sans-semibold text-white text-body-md">Open PDF</Text>
@@ -221,6 +230,7 @@ export default function DocumentScreen() {
           )}
         </ScrollView>
       )}
+      <AIConsentModal open={consentOpen} onClose={() => setConsentOpen(false)} />
     </Screen>
   );
 }

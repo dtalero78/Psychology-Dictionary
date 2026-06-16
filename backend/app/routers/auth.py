@@ -1,10 +1,11 @@
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models.user import User
 from ..schemas.auth import (
     RegisterRequest, LoginRequest, AppleAuthRequest,
-    TokenResponse, RefreshRequest, UserOut, APNsTokenRequest
+    TokenResponse, RefreshRequest, UserOut, APNsTokenRequest, AIConsentRequest,
 )
 from ..schemas.common import ApiResponse
 from ..services.auth_service import (
@@ -81,14 +82,19 @@ def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
     ))
 
 
-@router.get("/me", response_model=ApiResponse[UserOut])
-def me(user: User = Depends(get_current_user)):
-    return ApiResponse.ok(UserOut(
+def _user_out(user: User) -> UserOut:
+    return UserOut(
         id=user.id,
         email=user.email,
         plan=user.plan.value,
         created_at=user.created_at.isoformat(),
-    ))
+        ai_consent_at=user.ai_consent_at.isoformat() if user.ai_consent_at else None,
+    )
+
+
+@router.get("/me", response_model=ApiResponse[UserOut])
+def me(user: User = Depends(get_current_user)):
+    return ApiResponse.ok(_user_out(user))
 
 
 @router.put("/apns-token", response_model=ApiResponse[dict])
@@ -96,6 +102,23 @@ def update_apns_token(body: APNsTokenRequest, db: Session = Depends(get_db), use
     user.apns_token = body.apns_token
     db.commit()
     return ApiResponse.ok({"updated": True})
+
+
+@router.put("/ai-consent", response_model=ApiResponse[UserOut])
+def update_ai_consent(
+    body: AIConsentRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Record (or revoke) the user's explicit consent for Anthropic Claude
+    processing. Required by App Store Guideline 5.1.2(i) revised Nov 2025."""
+    if body.consent:
+        user.ai_consent_at = datetime.now(timezone.utc)
+    else:
+        user.ai_consent_at = None
+    db.commit()
+    db.refresh(user)
+    return ApiResponse.ok(_user_out(user))
 
 
 @router.delete("/me", response_model=ApiResponse[dict])

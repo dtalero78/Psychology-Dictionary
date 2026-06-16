@@ -9,7 +9,7 @@ from ..models.analysis import Analysis
 from ..models.document import ApaDocument
 from ..schemas.projects import ProjectCreate, ProjectUpdate, ProjectOut, StepUpdate, StepResult
 from ..schemas.common import ApiResponse
-from ..dependencies import get_current_user
+from ..dependencies import get_current_user, require_ai_consent
 from ..services import claude_service
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -192,7 +192,8 @@ async def save_step(
     project_id: str,
     step_number: int,
     body: StepUpdate,
-    user: User = Depends(get_current_user),
+    # require_ai_consent ⇒ this endpoint forwards user content to Claude.
+    user: User = Depends(require_ai_consent),
     db: Session = Depends(get_db),
 ):
     if step_number < 1 or step_number > 8:

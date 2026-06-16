@@ -3,6 +3,9 @@ export interface User {
   email: string | null;
   plan: 'free' | 'pro';
   created_at: string;
+  // ISO timestamp of explicit consent for Anthropic Claude processing.
+  // null = no consent; AI endpoints will 403 until the user opts in.
+  ai_consent_at: string | null;
 }
 
 export interface TokenResponse {

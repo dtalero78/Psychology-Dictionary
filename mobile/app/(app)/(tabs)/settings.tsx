@@ -10,11 +10,45 @@ import { Body, Button, Card, H1, LabelCaps, Muted, Pill, Screen } from '../../..
 const PRODUCT_ID = 'com.psychologydictionary.pro.annual';
 
 export default function SettingsScreen() {
-  const { user, logout, refreshUser } = useAuth();
+  const { user, hasAiConsent, setAiConsent, logout, refreshUser } = useAuth();
   const [subStatus, setSubStatus] = useState<SubscriptionStatus | null>(null);
   const [pkg, setPkg] = useState<PurchasesPackage | null>(null);
   const [purchasing, setPurchasing] = useState(false);
   const [restoring, setRestoring] = useState(false);
+  const [togglingAi, setTogglingAi] = useState(false);
+
+  async function handleToggleAi(grant: boolean) {
+    if (togglingAi) return;
+    if (!grant) {
+      // Revoke: confirm because AI-dependent features will be disabled.
+      Alert.alert(
+        'Revoke AI consent?',
+        'Generate, statistical interpretations, and APA report generation will be disabled. You can re-enable AI any time from this screen.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Revoke',
+            style: 'destructive',
+            onPress: async () => {
+              setTogglingAi(true);
+              try { await setAiConsent(false); }
+              catch (e: any) { Alert.alert('Failed', e.message); }
+              finally { setTogglingAi(false); }
+            },
+          },
+        ],
+      );
+      return;
+    }
+    setTogglingAi(true);
+    try {
+      await setAiConsent(true);
+    } catch (e: any) {
+      Alert.alert('Failed', e.message);
+    } finally {
+      setTogglingAi(false);
+    }
+  }
 
   useEffect(() => {
     fetchStatus();
@@ -196,6 +230,52 @@ await api.post('/subscriptions/verify', { product_id: PRODUCT_ID });
             ))}
           </>
         )}
+
+        {/* AI features toggle — required by App Store Guideline 5.1.2(i) */}
+        <LabelCaps className="mt-4 mb-2">AI features</LabelCaps>
+        <Card className="mb-2">
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
+            <View style={{ flex: 1 }}>
+              <Body className="font-sans-medium">
+                {hasAiConsent ? 'Enabled' : 'Disabled'}
+              </Body>
+              <Muted className="text-label-sm mt-1">
+                When enabled, your research design content is sent to Anthropic Claude for guided
+                suggestions, statistical interpretations, and APA paper drafts. Survey participant
+                responses are never sent. Anthropic does not train on your inputs.
+              </Muted>
+            </View>
+            <Pressable
+              onPress={() => handleToggleAi(!hasAiConsent)}
+              disabled={togglingAi}
+              accessibilityRole="switch"
+              accessibilityState={{ checked: hasAiConsent }}
+              style={{
+                width: 52,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: hasAiConsent ? '#6f518e' : '#c5c6ce',
+                padding: 2,
+                opacity: togglingAi ? 0.5 : 1,
+              }}
+            >
+              <View
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
+                  backgroundColor: '#ffffff',
+                  transform: [{ translateX: hasAiConsent ? 20 : 0 }],
+                  shadowColor: '#000',
+                  shadowOpacity: 0.15,
+                  shadowRadius: 2,
+                  shadowOffset: { width: 0, height: 1 },
+                  elevation: 2,
+                }}
+              />
+            </Pressable>
+          </View>
+        </Card>
 
         <Pressable
           onPress={handleLogout}

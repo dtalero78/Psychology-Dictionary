@@ -7,7 +7,7 @@ from ..models.analysis import Analysis
 from ..models.survey import Survey, SurveyResponse
 from ..schemas.analysis import AnalysisRequest, AnalysisResult, FromSurveyRequest
 from ..schemas.common import ApiResponse
-from ..dependencies import get_current_user
+from ..dependencies import get_current_user, require_ai_consent
 from ..services import stats_service, claude_service
 
 router = APIRouter(prefix="/analysis", tags=["analysis"])
@@ -55,7 +55,7 @@ def get_analysis(analysis_id: str, user: User = Depends(get_current_user), db: S
 
 
 @router.post("", response_model=ApiResponse[AnalysisResult])
-async def run_analysis(body: AnalysisRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def run_analysis(body: AnalysisRequest, user: User = Depends(require_ai_consent), db: Session = Depends(get_db)):
     project = db.query(Project).filter(Project.id == body.project_id, Project.user_id == user.id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -87,7 +87,7 @@ async def run_analysis(body: AnalysisRequest, user: User = Depends(get_current_u
 @router.post("/from-survey", response_model=ApiResponse[AnalysisResult])
 async def run_analysis_from_survey(
     body: FromSurveyRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_ai_consent),
     db: Session = Depends(get_db),
 ):
     project = db.query(Project).filter(Project.id == body.project_id, Project.user_id == user.id).first()

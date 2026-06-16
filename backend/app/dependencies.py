@@ -35,3 +35,19 @@ def require_pro(user: User = Depends(get_current_user)) -> User:
             detail="Pro subscription required",
         )
     return user
+
+
+def require_ai_consent(user: User = Depends(get_current_user)) -> User:
+    """Gate every endpoint that forwards user content to Anthropic Claude.
+
+    App Store Guideline 5.1.2(i) (revised Nov 2025) requires explicit user
+    consent BEFORE personal data is transmitted to a named third-party AI.
+    Endpoints returning 403 here let the mobile client trigger the consent
+    modal and retry once the user opts in.
+    """
+    if user.ai_consent_at is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="AI_CONSENT_REQUIRED",
+        )
+    return user

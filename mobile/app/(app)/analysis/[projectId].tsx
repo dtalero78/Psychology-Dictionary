@@ -3,9 +3,12 @@ import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-nativ
 import { useLocalSearchParams, router } from 'expo-router';
 import { Database, ListChecks } from 'lucide-react-native';
 import { api, unwrap, aiTimeout } from '../../../src/api/client';
+import { useAuth } from '../../../src/context/AuthContext';
 import type { AnalysisResult, Survey, SurveyQuestion } from '../../../src/types';
 import { Button, Card, LabelCaps, Muted, Pill, Screen } from '../../../components/ui';
 import { SheetModal } from '../../../components/SheetModal';
+import { AIConsentModal } from '../../../components/AIConsentModal';
+import { AIWarningBanner } from '../../../components/AIWarningBanner';
 
 // kind: 'numeric' accepts likert/number questions; 'category' accepts select/text;
 // 'multi-numeric' allows multiple numeric questions (regression predictors).
@@ -140,6 +143,8 @@ type Mapping = Record<string, string | string[]>;
 
 export default function AnalysisScreen() {
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
+  const { hasAiConsent } = useAuth();
+  const [consentOpen, setConsentOpen] = useState(false);
   const [mode, setMode] = useState<'manual' | 'survey'>('manual');
   const [selectedTest, setSelectedTest] = useState<Test>(TESTS[0]);
   const [fields, setFields] = useState<Record<string, string>>({});
@@ -225,6 +230,7 @@ export default function AnalysisScreen() {
       Alert.alert('Data error', err);
       return;
     }
+    if (!hasAiConsent) { setConsentOpen(true); return; }
     setRunning(true);
     setResult(null);
     try {
@@ -234,6 +240,10 @@ export default function AnalysisScreen() {
       setResult(r);
       setHistory((prev) => [r, ...prev]);
     } catch (e: any) {
+      if (e?.response?.status === 403 && e?.response?.data?.detail === 'AI_CONSENT_REQUIRED') {
+        setConsentOpen(true);
+        return;
+      }
       Alert.alert('Analysis failed', e?.response?.data?.error ?? e?.response?.data?.detail ?? e.message);
     } finally {
       setRunning(false);
@@ -246,6 +256,7 @@ export default function AnalysisScreen() {
       Alert.alert('Mapping incomplete', err);
       return;
     }
+    if (!hasAiConsent) { setConsentOpen(true); return; }
     setRunning(true);
     setResult(null);
     try {
@@ -259,6 +270,10 @@ export default function AnalysisScreen() {
       setResult(r);
       setHistory((prev) => [r, ...prev]);
     } catch (e: any) {
+      if (e?.response?.status === 403 && e?.response?.data?.detail === 'AI_CONSENT_REQUIRED') {
+        setConsentOpen(true);
+        return;
+      }
       Alert.alert('Analysis failed', e?.response?.data?.error ?? e?.response?.data?.detail ?? e.message);
     } finally {
       setRunning(false);
@@ -525,6 +540,7 @@ export default function AnalysisScreen() {
             </View>
 
             <LabelCaps className="mb-2">APA Interpretation</LabelCaps>
+            <AIWarningBanner text="AI-generated interpretation. Verify before citing or publishing." />
             <Text className="font-serif text-body-lg italic text-ink leading-7">{result.interpretation_apa}</Text>
 
             <Pressable onPress={() => router.push(`/(app)/analysis/result/${result.id}`)} className="self-end mt-3">
@@ -619,6 +635,8 @@ export default function AnalysisScreen() {
           })()}
         </View>
       </SheetModal>
+
+      <AIConsentModal open={consentOpen} onClose={() => setConsentOpen(false)} />
     </Screen>
   );
 }

@@ -29,11 +29,15 @@ interface AuthState {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  // True when the user has explicitly opted into Anthropic Claude processing.
+  // AI-calling endpoints will 403 until this becomes true.
+  hasAiConsent: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginWithApple: (identityToken: string, authorizationCode: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  setAiConsent: (consent: boolean) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -114,8 +118,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await fetchMe();
   }
 
+  async function setAiConsent(consent: boolean) {
+    const res = await api.put('/auth/ai-consent', { consent });
+    setUser(unwrap<User>(res));
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, isAuthenticated: !!user, login, loginWithApple, register, logout, refreshUser }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        isAuthenticated: !!user,
+        hasAiConsent: !!user?.ai_consent_at,
+        login,
+        loginWithApple,
+        register,
+        logout,
+        refreshUser,
+        setAiConsent,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

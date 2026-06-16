@@ -16,9 +16,12 @@ import {
   Sparkles,
 } from 'lucide-react-native';
 import { api, aiTimeout, unwrap } from '../../../src/api/client';
+import { useAuth } from '../../../src/context/AuthContext';
 import type { Project, StepResult } from '../../../src/types';
 import { TutorCard, Body, Button, H1, H2, LabelCaps, Muted, Pill, Screen, StepProgress } from '../../../components/ui';
 import { SheetModal } from '../../../components/SheetModal';
+import { AIConsentModal } from '../../../components/AIConsentModal';
+import { AIWarningBanner } from '../../../components/AIWarningBanner';
 
 /**
  * Splits a tutor response into a leading "context" (explanation/preamble)
@@ -181,6 +184,10 @@ export default function ProjectScreen() {
   // When true, the tutor sheet shows the response as freely editable text
   // even if numbered options are present. Used by "Edit this step" flows.
   const [forceEditMode, setForceEditMode] = useState(false);
+  // AI consent modal — shown the first time the user taps Generate without
+  // an ai_consent_at on file, or when the backend returns 403 AI_CONSENT_REQUIRED.
+  const { hasAiConsent } = useAuth();
+  const [consentOpen, setConsentOpen] = useState(false);
 
   useEffect(() => {
     fetchProject();
@@ -219,6 +226,13 @@ export default function ProjectScreen() {
       Alert.alert('Input required', 'Please enter some text before running this step.');
       return;
     }
+    // Apple Guideline 5.1.2(i): require explicit consent BEFORE the first
+    // call. If no consent on file, surface the modal and let the user opt in;
+    // the modal calls runStep again on grant.
+    if (!hasAiConsent) {
+      setConsentOpen(true);
+      return;
+    }
     setLoading(true);
     setAiResponse('');
     setForceEditMode(false);
@@ -235,7 +249,13 @@ export default function ProjectScreen() {
       setTutorSheetOpen(true);
       await fetchProject();
     } catch (e: any) {
-      Alert.alert('Error', e?.response?.data?.error ?? e.message);
+      // Race: server says consent missing even though we thought we had it.
+      // Re-open the modal so the user can re-grant.
+      if (e?.response?.status === 403 && e?.response?.data?.detail === 'AI_CONSENT_REQUIRED') {
+        setConsentOpen(true);
+        return;
+      }
+      Alert.alert('Error', e?.response?.data?.error ?? e?.response?.data?.detail ?? e.message);
     } finally {
       setLoading(false);
     }
@@ -681,6 +701,9 @@ export default function ProjectScreen() {
           </Button>
         }
       >
+        {/* AI-generated disclaimer — Guideline 1.4 / 5.1.2(i) */}
+        <AIWarningBanner />
+
         {/* Mode toggle when both Pick One and Edit are available */}
         {tutorOptions.length > 0 && (
           <View
@@ -869,6 +892,17 @@ export default function ProjectScreen() {
           </SheetModal>
         );
       })()}
+
+      {/* AI consent modal — Apple Guideline 5.1.2(i) */}
+      <AIConsentModal
+        open={consentOpen}
+        onClose={() => setConsentOpen(false)}
+        onGranted={() => {
+          // After grant the user has to tap Generate again. We deliberately
+          // do NOT auto-retry to avoid forcing a Claude call right after
+          // consent in case the user wants to re-read their input first.
+        }}
+      />
     </Screen>
   );
 }

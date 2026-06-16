@@ -11,7 +11,7 @@ from ..models.project import Project
 from ..models.document import ApaDocument
 from ..schemas.documents import DocumentRequest, DocumentOut
 from ..schemas.common import ApiResponse
-from ..dependencies import get_current_user
+from ..dependencies import get_current_user, require_ai_consent
 from ..services import claude_service, document_service
 
 logger = logging.getLogger(__name__)
@@ -94,7 +94,7 @@ def get_document(document_id: str, user: User = Depends(get_current_user), db: S
 
 
 @router.post("", response_model=ApiResponse[DocumentOut])
-async def generate_document(body: DocumentRequest, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def generate_document(body: DocumentRequest, user: User = Depends(require_ai_consent), db: Session = Depends(get_db)):
     project = db.query(Project).filter(Project.id == body.project_id, Project.user_id == user.id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
