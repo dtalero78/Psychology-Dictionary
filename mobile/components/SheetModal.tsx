@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import {
-  KeyboardAvoidingView,
+  Keyboard,
   Modal,
   Platform,
   Pressable,
@@ -15,9 +15,13 @@ import { theme } from './ui';
 /**
  * Bottom sheet that sizes to its content (max ~85% of screen).
  * Renders as a transparent modal with a dimmed backdrop. Tap backdrop or
- * X icon to close. KeyboardAvoidingView ensures inputs are not hidden by
- * the keyboard — needed for the "New Project" / "Edit name" sheets where
- * the user types into a TextInput inside the sheet.
+ * X icon to close.
+ *
+ * Keyboard handling: KeyboardAvoidingView is unreliable inside a transparent
+ * Modal on iOS — the events fire but the padding sometimes never applies.
+ * We listen to Keyboard.keyboardWillShow / keyboardWillHide directly and
+ * push the sheet up by exactly the keyboard height. This is the version
+ * that actually works for the New Project / Edit name / tutor sheets.
  */
 export function SheetModal({
   open,
@@ -38,28 +42,47 @@ export function SheetModal({
 }) {
   const { C } = theme;
   const [showHelp, setShowHelp] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
   // Reset help visibility each time sheet opens.
   useEffect(() => {
     if (!open) setShowHelp(false);
   }, [open]);
+
+  // Manually track the keyboard so we can shift the sheet up by exactly its
+  // height. KeyboardAvoidingView inside a transparent Modal is unreliable on
+  // iOS — events fire but the padding sometimes never lands.
+  useEffect(() => {
+    if (!open) {
+      setKeyboardHeight(0);
+      return;
+    }
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [open]);
   return (
     <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        // 'padding' is the iOS-correct mode here: KAV adds bottom padding
-        // equal to the keyboard height, which shifts our flex-end sheet up
-        // by exactly the right amount. Android handles keyboard reposition
-        // natively via windowSoftInputMode, so we leave behavior undefined.
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1, justifyContent: 'flex-end' }}
-      >
-        {/* Backdrop (closes on tap). Inside KAV so it covers the padded
-            area too — otherwise a strip of keyboard would show through. */}
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+        {/* Backdrop (closes on tap) */}
         <Pressable
           onPress={onClose}
           style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(20,20,30,0.45)' }]}
         />
 
-        {/* Sheet at bottom */}
+        {/* Sheet at bottom. marginBottom = keyboardHeight pushes the entire
+            sheet up by exactly the keyboard's height so the TextInput stays
+            visible. Tracking this manually via Keyboard listeners (above) is
+            reliable inside a transparent Modal; KeyboardAvoidingView is not. */}
         <View
           style={{
             backgroundColor: C.surfaceLowest,
@@ -67,6 +90,7 @@ export function SheetModal({
             borderTopRightRadius: 24,
             maxHeight: '85%',
             paddingBottom: 24,
+            marginBottom: keyboardHeight,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: -4 },
             shadowOpacity: 0.12,
@@ -174,7 +198,7 @@ export function SheetModal({
               </View>
             ) : null}
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }

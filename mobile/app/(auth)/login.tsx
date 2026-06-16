@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, View } from 'react-native';
 import { Link, router } from 'expo-router';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useAuth } from '../../src/context/AuthContext';
@@ -48,10 +48,18 @@ export default function LoginScreen() {
     <Screen>
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View className="flex-1 justify-center px-7">
-          <View className="mb-10 items-center">
+          <View className="mb-8 items-center">
+            {/* Brand mark — same marble bust used in the icon / splash / outro
+                so the brand identity carries across every surface. */}
+            <Image
+              source={require('../../assets/bust.png')}
+              style={{ width: 132, height: 174, marginBottom: 16 }}
+              resizeMode="contain"
+              accessibilityLabel="Psychology Dictionary Lab"
+            />
             <H1 className="text-center">Psychology Dictionary Lab</H1>
             <Body className="text-purple font-sans-semibold text-headline-md mt-1 text-center">Research Tutor</Body>
-            <Muted className="mt-4 text-center">Excellence in academic research, at your fingertips.</Muted>
+            <Muted className="mt-3 text-center">Excellence in academic research, at your fingertips.</Muted>
           </View>
 
           <AppleAuthentication.AppleAuthenticationButton

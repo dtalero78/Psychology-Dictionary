@@ -104,7 +104,14 @@ async def interpret_analysis(test_type: str, result_json: dict, project_context:
 
 
 async def generate_apa_document(project_data: dict) -> dict:
-    """Generate complete APA 7th edition document sections."""
+    """Generate complete APA 7th edition document sections.
+
+    Returns a dict with keys: title, abstract, introduction, method, results,
+    discussion, references, plus optional running_head, keywords. Falls back
+    to {"raw": <full text>, "error": <reason>} when the model output cannot
+    be parsed — generate_pdf will then surface only the title, which is the
+    visible symptom we want to catch in monitoring.
+    """
     apa_prompt = load_prompt("apa_document.txt")
     system_base = load_prompt("system_base.txt")
 
@@ -114,7 +121,11 @@ async def generate_apa_document(project_data: dict) -> dict:
     client = get_client()
     message = await client.messages.create(
         model=MODEL,
-        max_tokens=4096,
+        # A full APA paper is long: ~18k characters / ~4500 output tokens at
+        # minimum. The previous 4096 cap was truncating mid-JSON, silently
+        # falling back to {"raw": ...} and producing 1.5KB stub PDFs. Sonnet
+        # 4.6 supports up to 16384 output tokens.
+        max_tokens=16000,
         system=[
             {
                 "type": "text",
@@ -131,12 +142,26 @@ async def generate_apa_document(project_data: dict) -> dict:
     )
     raw = message.content[0].text
 
-    try:
-        import re
-        json_match = re.search(r"\{.*\}", raw, re.DOTALL)
-        if json_match:
-            return json.loads(json_match.group())
-    except Exception:
-        pass
+    # Claude often wraps the JSON in a ```json … ``` code fence. Strip both
+    # the fence and any leading prose before parsing.
+    import re
+    cleaned = raw.strip()
+    fence_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", cleaned, re.DOTALL)
+    if fence_match:
+        candidate = fence_match.group(1)
+    else:
+        # Greedy match: first { to last } in the whole response.
+        brace_match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+        candidate = brace_match.group() if brace_match else None
 
-    return {"raw": raw}
+    if candidate:
+        try:
+            parsed = json.loads(candidate)
+            if isinstance(parsed, dict) and "abstract" in parsed:
+                return parsed
+            # Parsed something but it's missing the canonical sections.
+            return {"raw": raw, "error": "parsed JSON missing expected sections"}
+        except json.JSONDecodeError as e:
+            return {"raw": raw, "error": f"JSON parse failed at char {e.pos}: {e.msg}"}
+
+    return {"raw": raw, "error": "no JSON object found in response"}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, View } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuth } from '../../src/context/AuthContext';
 import { Body, Button, H1, Input, LabelCaps, Muted, Screen } from '../../components/ui';
@@ -34,7 +34,13 @@ export default function RegisterScreen() {
     <Screen>
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View className="flex-1 justify-center px-7">
-          <View className="mb-10 items-center">
+          <View className="mb-8 items-center">
+            <Image
+              source={require('../../assets/bust.png')}
+              style={{ width: 132, height: 174, marginBottom: 16 }}
+              resizeMode="contain"
+              accessibilityLabel="Psychology Dictionary Lab"
+            />
             <H1 className="text-center">Create your account</H1>
             <Body className="text-purple font-sans-semibold text-headline-md mt-1 text-center">Psychology Dictionary Lab</Body>
             <Muted className="mt-3 text-center">Free tier includes 1 project and 50 survey responses.</Muted>
