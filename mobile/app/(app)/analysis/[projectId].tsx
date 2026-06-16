@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Database, ListChecks } from 'lucide-react-native';
-import { api, unwrap } from '../../../src/api/client';
+import { api, unwrap, aiTimeout } from '../../../src/api/client';
 import type { AnalysisResult, Survey, SurveyQuestion } from '../../../src/types';
 import { Button, Card, LabelCaps, Muted, Pill, Screen } from '../../../components/ui';
 import { SheetModal } from '../../../components/SheetModal';
@@ -229,7 +229,7 @@ export default function AnalysisScreen() {
     setResult(null);
     try {
       const data = selectedTest.buildData(fields);
-      const res = await api.post('/analysis', { project_id: projectId, test_type: selectedTest.id, data });
+      const res = await api.post('/analysis', { project_id: projectId, test_type: selectedTest.id, data }, aiTimeout(180000));
       const r = unwrap<AnalysisResult>(res);
       setResult(r);
       setHistory((prev) => [r, ...prev]);
@@ -254,7 +254,7 @@ export default function AnalysisScreen() {
         survey_id: selectedSurveyId,
         test_type: selectedTest.id,
         mapping,
-      });
+      }, aiTimeout(180000));
       const r = unwrap<AnalysisResult>(res);
       setResult(r);
       setHistory((prev) => [r, ...prev]);
