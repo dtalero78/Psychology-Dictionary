@@ -1,6 +1,8 @@
 import { ReactNode, useEffect, useState } from 'react';
 import {
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,9 +13,11 @@ import { HelpCircle, X } from 'lucide-react-native';
 import { theme } from './ui';
 
 /**
- * Bottom sheet that sizes to its content (max ~80% of screen).
+ * Bottom sheet that sizes to its content (max ~85% of screen).
  * Renders as a transparent modal with a dimmed backdrop. Tap backdrop or
- * X icon to close. Keyboard pushes the sheet up via KeyboardAvoidingView.
+ * X icon to close. KeyboardAvoidingView ensures inputs are not hidden by
+ * the keyboard — needed for the "New Project" / "Edit name" sheets where
+ * the user types into a TextInput inside the sheet.
  */
 export function SheetModal({
   open,
@@ -40,8 +44,16 @@ export function SheetModal({
   }, [open]);
   return (
     <Modal visible={open} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        {/* Backdrop (closes on tap) */}
+      <KeyboardAvoidingView
+        // 'padding' is the iOS-correct mode here: KAV adds bottom padding
+        // equal to the keyboard height, which shifts our flex-end sheet up
+        // by exactly the right amount. Android handles keyboard reposition
+        // natively via windowSoftInputMode, so we leave behavior undefined.
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1, justifyContent: 'flex-end' }}
+      >
+        {/* Backdrop (closes on tap). Inside KAV so it covers the padded
+            area too — otherwise a strip of keyboard would show through. */}
         <Pressable
           onPress={onClose}
           style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(20,20,30,0.45)' }]}
@@ -162,7 +174,7 @@ export function SheetModal({
               </View>
             ) : null}
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
