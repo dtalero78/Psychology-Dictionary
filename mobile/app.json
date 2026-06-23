@@ -20,9 +20,6 @@
       "infoPlist": {
         "NSUserNotificationUsageDescription": "We'll notify you when your survey receives new responses.",
         "ITSAppUsesNonExemptEncryption": false
-      },
-      "entitlements": {
-        "com.apple.developer.in-app-payments": []
       }
     },
     "android": {
