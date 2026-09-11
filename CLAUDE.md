@@ -13,7 +13,7 @@ Psychology Dictionary Lab — Expo React Native (iOS-first) + FastAPI backend + 
 
 ## Production
 - API: `https://api.psychologydictionary.app` — **DigitalOcean App Platform** (basic-xxs tier), app id `75bf8482-fbfe-4a88-ad11-a40e672fe7a1`. NOT a Droplet; there is no Nginx/Let's Encrypt to manage. Auto-deploys from `main` on push.
-- DB: managed Postgres attached to the App.
+- DB: Postgres reached through the `DATABASE_URL` app-level env var, stored as an encrypted SECRET in the App spec. It is **not** an attached DB component: `spec.databases` is empty, and it already was in the June 2026 deployments. No DO cluster has a database or user named `psydict`; the tables live in the `psydict` schema of whatever database that secret points to. Don't assume which cluster it is, and don't rotate or replace the secret without confirming the target first.
 - File storage: **DigitalOcean Spaces bucket `bsl-fotos`** (NYC3), shared with other apps (kbnet, bsl-plataforma, bodytech). Always write keys under the `psydict/` prefix to avoid collision. Spaces access key is `psydict-uploads`, scoped to bsl-fotos readwrite.
 - Manage env vars / triggers via `doctl apps spec get|update <app-id>`. Spec changes auto-trigger a deploy.
 
